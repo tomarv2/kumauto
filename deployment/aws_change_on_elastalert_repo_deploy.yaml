@@ -13,7 +13,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: monitoring
-        image: dcr.devlabs.com/devlabs/devops/monitoring-base:v250
+        image: dcr.demo.com/demo/devops/monitoring-base:v250
         command:
           - "/bin/sh"
           - "-c"

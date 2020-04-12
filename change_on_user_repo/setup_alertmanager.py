@@ -114,10 +114,10 @@ def nonprod_alertmanager(alertmanager_file, prj_name, modules, env, to_email_lis
   email_configs:
   - send_resolved: true
     to: '{2}' # DO NOT REMOVE TAG: {0}-team
-    from: {1}-prometheus@devlabs.com
-    smarthost: outmail.devlabs.com:25
+    from: {1}-prometheus@demo.com
+    smarthost: outmail.demo.com:25
     headers:
-      From: {1}-prometheus@devlabs.com
+      From: {1}-prometheus@demo.com
       Subject: '{{{3} template "email.default.subject" . {4}}}'
       To: '{2}' # DO NOT REMOVE TAG: {0}-team
     html: '{{{3} template "email.default.html" . {4}}}'
@@ -159,10 +159,10 @@ def prod_alertmanager(alertmanager_file, prj_name, modules, env, to_email_list, 
   email_configs:
   - send_resolved: true
     to: '{2}' # DO NOT REMOVE TAG: {0}-team
-    from: {1}-prometheus@devlabs.com
-    smarthost: outmail.devlabs.com:25
+    from: {1}-prometheus@demo.com
+    smarthost: outmail.demo.com:25
     headers:
-      From: {1}-prometheus@devlabs.com
+      From: {1}-prometheus@demo.com
       Subject: '{{{3} template "email.default.subject" . {4}}}'
       To: '{2}' # DO NOT REMOVE TAG: {0}-team
     html: '{{{3} template "email.default.html" . {4}}}'

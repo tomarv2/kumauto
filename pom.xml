@@ -34,7 +34,7 @@
                     </executions>
                     <configuration>
                         <serverId>nexus-snapshots</serverId>
-                        <nexusUrl>http://bamboo.onpremtest.devlabs.com:8081/nexus/</nexusUrl>
+                        <nexusUrl>http://bamboo.onpremtest.demo.com:8081/nexus/</nexusUrl>
                         <skipStaging>true</skipStaging>
                     </configuration>
                 </plugin>
@@ -92,13 +92,13 @@
         <repository>
             <id>nexus-releases</id>
             <name>Internal</name>
-            <url>http://bamboo.onpremtest.devlabs.com:8081/nexus/content/repositories/releases</url>
+            <url>http://bamboo.onpremtest.demo.com:8081/nexus/content/repositories/releases</url>
             <uniqueVersion>true</uniqueVersion>
         </repository>
         <snapshotRepository>
             <id>nexus-snapshots</id>
             <name>Internal</name>
-            <url>http://bamboo.onpremtest.devlabs.com:8081/nexus/content/repositories/snapshots</url>
+            <url>http://bamboo.onpremtest.demo.com:8081/nexus/content/repositories/snapshots</url>
             <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>

@@ -17,7 +17,7 @@ RUN apt-get install -y vim \
 
 ADD . ./automation/
 
-RUN git config --global user.email automation@devlabs.com
+RUN git config --global user.email automation@demo.com
 RUN git config --global user.name automation
 
 RUN pip install -r ./automation/requirements.txt

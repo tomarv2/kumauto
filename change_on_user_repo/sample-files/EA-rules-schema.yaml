@@ -4,7 +4,7 @@ mapping:
   es_host:
     type: str
     required: True
-    enum: ['es.demo.com', 'es.onpremtest.devlabs.com', 'elasticsearch.default']
+    enum: ['es.demo.com', 'es.onpremtest.demo.com', 'elasticsearch.default']
   es_port: 
     type: int
     required: True

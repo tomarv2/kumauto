@@ -15,7 +15,7 @@ monitoring:
 
   notification:
     email:
-      - test-email@devlabs.com
+      - test-email@demo.com
     pagerduty: # only applicable for prod
       service_key:
         - '123abc'
@@ -58,11 +58,11 @@ monitoring:
 
 kafka: # (default value is No) only applicable in Dev and QA
   delete_topic: No # please write YES_DELETE to confirm topic deletion
-  server: qakafka.onpremtest.devlabs.com
+  server: qakafka.onpremtest.demo.com
   topic:
    - test-topic01
    - test-topic02
 
 zookeeper:
-  server: zk.devlabs.com:2181/kafka
+  server: zk.demo.com:2181/kafka
 
