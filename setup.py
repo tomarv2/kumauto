@@ -25,7 +25,7 @@ setup(
         'GitPython==2.1.10',
         'idna==2.7',
         'in-place==0.2.0',
-        'PyYAML==3.12',
+        'PyYAML==5.1',
         'requests==2.19.1',
         'six==1.11.0',
         'smmap2==2.0.3',
