@@ -29,7 +29,7 @@ setup(
         'requests==2.19.1',
         'six==1.11.0',
         'smmap2==2.0.3',
-        'urllib3==1.23',
+        'urllib3==1.24.2',
         'yamllint==1.11.1'
     ]
 )
