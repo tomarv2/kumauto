@@ -8,7 +8,7 @@ setup(
     version='0.0.3',
     description='automation',
     author='demo',
-    author_email='dev-ops@devlabs.com',
+    author_email='demo@demo.com',
     setup_requires='setuptools',
     packages=find_packages(),
     # packages=['change_on_user_repo'],
