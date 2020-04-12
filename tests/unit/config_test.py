@@ -7,7 +7,7 @@ from validate_email import validate_email
 monitoring_items_in_requirements = []
 requirements_monitoring_yaml = ['project', 'namespace', 'notification', 'tools', 'modules', 'target', 'elastalert']
 requirements_cleanup_yaml = ['server', 'topic', 'delete_topic']
-available_namespaces = ['dataengr', 'services']
+available_namespaces = ['demo', 'services']
 available_project_name_extensions = ['service', 'transform', 'sync']
 env_in_list = ['onprem-qa', 'onprem-stg', 'onprem', 'aws-stg', 'aws']
 
@@ -89,7 +89,7 @@ def test_pagerduty_servicekey(filename):
         for j in i:
             assert (isinstance(j, str))
 
-# namespace should be either: dataengr or services
+# namespace should be either: demo or services
 @pytest.mark.config_unit
 def test_namespace(filename):
     with open(filename, 'r') as stream:

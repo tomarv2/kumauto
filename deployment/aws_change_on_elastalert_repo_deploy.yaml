@@ -19,7 +19,7 @@ spec:
           - "-c"
           - >
             set -x;
-            wget http://git.demo.com:7990/projects/DOPS/repos/elastalert/raw/config.yaml -O /tmp/config.yaml;
+            wget http://git.demo.com/projects/DP/repos/elastalert/raw/config.yaml -O /tmp/config.yaml;
             python /automation/change_on_elastalert_repo/deploy_monitoring.py \
                 /mnt/monitoring/alertmanager/alertmanager/alertmanager.yaml \
                 /mnt/monitoring/prometheus/prometheus/prometheus.yaml \

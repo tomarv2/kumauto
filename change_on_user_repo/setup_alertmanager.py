@@ -7,7 +7,7 @@ import yaml
 import shutil
 from core.logging_function import logger
 from core.base_function import *
-from git_push_prometheus import update_bitbucket_alertmanager
+from git_push_prometheus import update_github_alertmanager
 
 
 current_values_in_alertmanager = []
@@ -239,14 +239,14 @@ def alertmanager_replace_existing_entry(alertmanager_file, prj_name, tools, to_e
 
 
 #############################################################################################################
-# APPLY CHANGES TO NFS/EFS AND BITBUCKET FOR ALERTMANAGER
+# APPLY CHANGES TO NFS/EFS AND GITHUB FOR ALERTMANAGER
 #############################################################################################################
 def update_alertmanager(env, project_name, alertmanager_config_file_path):
     logger.info("=" * 75)
     try:
         logger.info("alertmanager: updating repo...")
         update_alertmanager_config(alertmanager_config_file_path)
-        update_bitbucket_alertmanager(alertmanager_config_file_path, project_name, env)
+        update_github_alertmanager(alertmanager_config_file_path, project_name, env)
     except BaseException:
         logger.error("prometheus: failed to update alertmanager config...")
 

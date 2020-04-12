@@ -53,8 +53,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'k8s_cluster_pwd_qa', passwordVariable: 'k8s_pwd', usernameVariable: 'k8s_user')]) {
-                        sh "wget http://git.demo.com:7990/projects/DOPS/repos/automation/raw/tests/unit/conftest.py -O conftest.py"
-                        sh "wget http://git.demo.com:7990/projects/DOPS/repos/automation/raw/tests/unit/config_test.py -O config_test.py"
+                        sh "wget http://git.demo.com/projects/DP/repos/automation/raw/tests/unit/conftest.py -O conftest.py"
+                        sh "wget http://git.demo.com/projects/DP/repos/automation/raw/tests/unit/config_test.py -O config_test.py"
                         //sh "pytest config_test.py --filename ./_kube/requirements.yaml"
                         sh "kubectl create configmap ${env.serviceName}-config --from-file=./_kube/requirements.yaml --namespace=sharedservices --server='https://qak8s-master.onpremtest.demo.com' --username=${k8s_user} --password=${k8s_pwd} --insecure-skip-tls-verify=true"
                     }
@@ -75,7 +75,7 @@ pipeline {
                 parallel (
                     'monitoring': {script {
                         withCredentials([usernamePassword(credentialsId: 'k8s_cluster_pwd_qa', passwordVariable: 'k8s_pwd', usernameVariable: 'k8s_user')]) {
-                            sh "wget http://git.demo.com:7990/projects/DOPS/repos/automation/raw/deployment/monitoring.yaml -O monitoring.yaml"
+                            sh "wget http://git.demo.com/projects/DP/repos/automation/raw/deployment/monitoring.yaml -O monitoring.yaml"
                             sh "sed -i 's/BASE/${env.serviceName}/g' monitoring.yaml"
                             sh "sed -i -e 's|image: aws.dkr.ecr.us-west-2.amazonaws.com/demo/devops/.*\$|image: aws.dkr.ecr.us-west-2.amazonaws.com/demo/devops/automation-base:${env.imageTag}|' monitoring.yaml"
                             sh "sed -i -e 's|python /automation/change_on_user_repo/main.py.*\$|python /automation/change_on_user_repo/main.py ONPREM-QA;|' monitoring.yaml"
@@ -90,7 +90,7 @@ pipeline {
                     },
                     'cleanup': {script {
                         withCredentials([usernamePassword(credentialsId: 'k8s_cluster_pwd_qa', passwordVariable: 'k8s_pwd', usernameVariable: 'k8s_user')]) {
-                            sh "wget http://git.demo.com:7990/projects/DOPS/repos/automation/raw/deployment/cleanup.yaml -O cleanup.yaml"
+                            sh "wget http://git.demo.com/projects/DP/repos/automation/raw/deployment/cleanup.yaml -O cleanup.yaml"
                             sh "sed -i 's/BASE/${env.serviceName}/g' cleanup.yaml"
                             sh "sed -i -e 's|image: aws.dkr.ecr.us-west-2.amazonaws.com/demo/devops/.*\$|image: aws.dkr.ecr.us-west-2.amazonaws.com/demo/devops/automation-base:${env.imageTag}|' cleanup.yaml"
                             sh "echo '======= cleanup.yaml =========='"

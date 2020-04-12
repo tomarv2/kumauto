@@ -4,7 +4,7 @@ import os
 import yaml
 from core.logging_function import logger
 from core.base_function import *
-from git_push_elastalert import update_bitbucket_elastalert
+from git_push_elastalert import update_github_elastalert
 
 
 current_list_of_projects = []
@@ -132,14 +132,14 @@ pagerduty_client_name: {6}\n'''. format(elasticsearch_hostname, env + '-' + proj
 
 
 #############################################################################################################
-# APPLY CHANGES TO NFS/EFS AND BITBUCKET FOR  ELASTALERT
+# APPLY CHANGES TO NFS/EFS AND GITHUB FOR  ELASTALERT
 #############################################################################################################
 def update_elastalert(env, project_name, elastalert_rules_dir):
     logger.info("=" * 75)
     try:
         update_elastalert_rules_dir(elastalert_rules_dir, env)
         logger.info("entering update git repo function...")
-        update_bitbucket_elastalert(os.path.join(elastalert_rules_dir, env), project_name, env)
+        update_github_elastalert(os.path.join(elastalert_rules_dir, env), project_name, env)
     except BaseException:
         logger.error("promethues: failed to update elastalert files...")
 

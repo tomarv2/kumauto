@@ -46,8 +46,8 @@ def convert_list_to_str(list):
 
 def get_index_name(project_name, namespace):
     if get_application_type(project_name) == 'service' or get_application_type(project_name) == 0:
-        if namespace == 'dataengr':
-            return 'dw-dataengr-app-logs-*'
+        if namespace == 'demo':
+            return 'dw-demo-app-logs-*'
         else:
             return 'dw-services-app-logs-*'
     if get_application_type(project_name) == 'sync':

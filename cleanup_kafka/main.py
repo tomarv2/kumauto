@@ -4,8 +4,8 @@ from cleanup_kafka import CleanupKafka
 from core.base_function import *
 config_yaml = '/automation/config.yaml'  # todo: better arrangement here
 requirements_yaml = '/tmp/user_input.yaml'
-# config_yaml = '/Users/devops/Documents/bitbucket/automation/config.yaml'  # todo: better arrangement here
-# requirements_yaml = '/Users/devops/Documents/bitbucket/automation/user_input.yaml'
+# config_yaml = '/Users/devops/Documents/github/automation/config.yaml'  # todo: better arrangement here
+# requirements_yaml = '/Users/devops/Documents/github/automation/user_input.yaml'
 from core.logging_function import logger
 logger.configure(None)
 

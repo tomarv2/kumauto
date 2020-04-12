@@ -7,7 +7,7 @@ from core.base_function import *
 config_yaml = '/automation/config.yaml'
 
 
-def update_bitbucket_prometheus(prometheus_rules_dir, prometheus_static_files_dir, prometheus_config_file, project_name, env):
+def update_github_prometheus(prometheus_rules_dir, prometheus_static_files_dir, prometheus_config_file, project_name, env):
     # prase config file
     with open(config_yaml, 'r') as stream_config:
             out_config = yaml.load(stream_config)
@@ -165,7 +165,7 @@ def update_bitbucket_prometheus(prometheus_rules_dir, prometheus_static_files_di
 
 ## ********************************************************************************************************************* ##
 
-def update_bitbucket_alertmanager(alertmanager_config_file, project_name, env):
+def update_github_alertmanager(alertmanager_config_file, project_name, env):
     # prase config file
     with open(config_yaml, 'r') as stream_config:
             out_config = yaml.load(stream_config)

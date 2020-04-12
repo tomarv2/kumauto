@@ -6,7 +6,7 @@ import in_place
 from shutil import copyfile
 from core.logging_function import logger
 from core.base_function import *
-from git_push_prometheus import update_bitbucket_prometheus
+from git_push_prometheus import update_github_prometheus
 
 current_values_in_prometheus_config = []
 
@@ -318,7 +318,7 @@ def update_targets(prometheus_staticfiles_dir, project_name, end_point, modules,
 
 
 #############################################################################################################
-# APPLY CHANGES TO NFS/EFS AND BITBUCKET FOR PROMETHEUS
+# APPLY CHANGES TO NFS/EFS AND GITHUB FOR PROMETHEUS
 #############################################################################################################
 def update_prometheus(env, project_name, monitoring_config_file_path, monitoring_rules_dir, monitoring_static_file_dir):
     logger.info("=" * 75)
@@ -327,7 +327,7 @@ def update_prometheus(env, project_name, monitoring_config_file_path, monitoring
         update_prometheus_rules_dir(os.path.join(monitoring_rules_dir, env))
         update_prometheus_staticfiles_dir(os.path.join(monitoring_static_file_dir, env))
         update_prometheus_config(monitoring_config_file_path)
-        update_bitbucket_prometheus(os.path.join(monitoring_rules_dir, env), os.path.join(monitoring_static_file_dir, env),
+        update_github_prometheus(os.path.join(monitoring_rules_dir, env), os.path.join(monitoring_static_file_dir, env),
                                 monitoring_config_file_path, project_name, env)
     except BaseException:
         logger.error("promethues: failed to update prometheus files...")

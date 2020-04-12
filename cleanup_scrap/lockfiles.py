@@ -9,8 +9,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 lock_path = "deploy.lock"
-source_dir = '/Users/devops/Documents/bitbucket/prometheus/prometheus/qa/static_files/project1-blackbox.yaml'
-destination_dir = '/Users/devops/Documents/bitbucket/prometheus/prometheus/qa/static_files/project2-blackbox.yaml'
+source_dir = '/Users/devops/Documents/github/prometheus/prometheus/qa/static_files/project1-blackbox.yaml'
+destination_dir = '/Users/devops/Documents/github/prometheus/prometheus/qa/static_files/project2-blackbox.yaml'
 base_file_checksum = []
 backup_file_checksum = []
 

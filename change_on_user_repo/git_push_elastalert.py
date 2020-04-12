@@ -7,7 +7,7 @@ from core.logging_function import logger
 config_yaml = '/automation/config.yaml'
 
 
-def update_bitbucket_elastalert(elastalert_rules_dir, project_name, env):
+def update_github_elastalert(elastalert_rules_dir, project_name, env):
     # prase config file
     with open(config_yaml, 'r') as stream_config:
             out_config = yaml.load(stream_config)

@@ -29,9 +29,9 @@ prometheus:
         - /mnt/monitoring/prometheus/monitoring/static_files
     repo:
       path:
-        - /tmp/update_bitbucket_prometheus/prometheus
+        - /tmp/update_github_prometheus/prometheus
       url:
-        - ssh://git@git.demo.com:7999/dops/prometheus.git
+        - ssh://git@git.demo.com:7999/dp/prometheus.git
 
 
 elastalert:
@@ -48,7 +48,7 @@ elastalert:
     nfs_path:
       - /mnt/monitoring/elastalert
   repo_url:
-    - ssh://git@git.demo.com:7999/dops/elastalert.git
+    - ssh://git@git.demo.com:7999/dp/elastalert.git
   repo_path:
     - /tmp/update_git_elastalert/elastalert
   rules_repo_name:
