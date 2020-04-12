@@ -7,7 +7,7 @@ setup(
     name='automation',
     version='0.0.3',
     description='automation',
-    author='tomarv2',
+    author='demo',
     author_email='dev-ops@devlabs.com',
     setup_requires='setuptools',
     packages=find_packages(),

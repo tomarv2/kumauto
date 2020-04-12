@@ -15,7 +15,7 @@ spec:
       - name: us-west-2-ecr-registry
       containers:
       - name: BASE-lma
-        image: tomarv2/automation: # <resolve at runtime>
+        image: demo/automation: # <resolve at runtime>
         command:
           - "/bin/sh"
           - "-c"
