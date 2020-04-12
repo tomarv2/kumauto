@@ -26,7 +26,7 @@ setup(
         'idna==2.7',
         'in-place==0.2.0',
         'PyYAML==3.12',
-        'requests==2.19.1',
+        'requests==2.20.0',
         'six==1.11.0',
         'smmap2==2.0.3',
         'urllib3==1.23',
