@@ -1,0 +1,104 @@
+prometheus:
+  alertmanager:
+    config:
+      file_path:
+      - /mnt/monitoring/prometheus/alertmanager/config.yaml
+      nfs_path:
+      - /mnt/monitoring/prometheus/alertmanager/config.yaml
+  monitoring:
+    config:
+      file_path:
+        - /mnt/monitoring/prometheus/monitoring/config.yaml
+      nfs_path:
+        - /mnt/monitoring/prometheus/monitoring/config.yaml
+    rules:
+      dir:
+        - /mnt/monitoring/prometheus/monitoring/rules
+      sample_file:
+        - /automation/change_on_user_repo/sample-files/sample-rules.yaml
+      sample_file_spark:
+        - /automation/change_on_user_repo/sample-files/sample-rules-spark.yaml
+      nfs_path:
+        - /mnt/monitoring/prometheus/monitoring/rules
+    static_file:
+      dir:
+        - /mnt/monitoring/prometheus/monitoring/static_files
+      sample_file:
+        - /automation/change_on_user_repo/sample-files/sample-staticfile.yaml
+      nfs_path:
+        - /mnt/monitoring/prometheus/monitoring/static_files
+    repo:
+      path:
+        - /tmp/update_bitbucket_prometheus/prometheus
+      url:
+        - ssh://git@git.demo.com:7999/dops/prometheus.git
+
+
+elastalert:
+  rules:
+    dir:
+    - /mnt/monitoring/elastalert/rules
+    nfs_path:
+    - /mnt/monitoring/elastalert/rules
+    sample_file:
+    - /automation/change_on_user_repo/sample-files/sample-elastalert-rules.yaml
+  config:
+    file_path:
+      - /mnt/monitoring/elastalert/config.yaml 
+    nfs_path:
+      - /mnt/monitoring/elastalert
+  repo_url:
+    - ssh://git@git.demo.com:7999/dops/elastalert.git
+  repo_path:
+    - /tmp/update_git_elastalert/elastalert
+  rules_repo_name:
+    - 'rules'
+  EA_rules_schema:
+    - /automation/change_on_user_repo/sample-files/EA-rules-schema.yaml
+  temporary_ea_rules:
+    - /tmp/temporary_ea_rules/
+
+elasticsearch:
+  hostname:
+    aws: elasticsearch.default
+  port: 9200
+
+branch:
+  - development
+
+pagerduty_client_name:
+  - elastalert
+
+slack:
+  channel:
+    - None
+
+index:
+  nifi:
+    - nifi-logs-*
+  spark:
+    - spark-logs-*
+  service:
+    - dw-access-logs-*
+
+ssh_key_path:
+  - /tmp/secret/id_rsa
+
+env:
+  - aws-stg
+  - aws
+
+log:
+ filename:
+   - /mnt/monitoring/logs/automation.log
+ level:
+   - debug
+
+kafka_docker_image: mesosphere/kafka-client
+
+zookeeper_exclude_list:
+  - zk.demo.com
+  - zk01.demo.com
+  - zk02.demo.com
+  - zk03.demo.com
+

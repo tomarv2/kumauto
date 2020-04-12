@@ -1,0 +1,47 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: sharedservices
+  name: BASE-lma
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        cluster: BASE-lma
+    spec:
+      terminationGracePeriodSeconds: 10
+      imagePullSecrets:
+      - name: us-west-2-ecr-registry
+      containers:
+      - name: BASE-lma
+        image: tomarv2/automation: # <resolve at runtime>
+        command:
+          - "/bin/sh"
+          - "-c"
+          - >
+            set -x;
+            chmod 400 /tmp/secret/id_rsa;
+            python /automation/change_on_user_repo/main.py  <resolve at runtime>;
+            sleep 60;
+            curl -XPOST http://prometheus-monitoring.sharedservices:9090/-/reload;
+            curl -XPOST http://prometheus-am.sharedservices:9093/-/reload;
+            sleep infinity
+        volumeMounts:
+        - name: monitoring-volume
+          mountPath: /mnt
+        - name: ssh-config-volume
+          mountPath: "/tmp/secret"
+        - name: monitoring-config-volume
+          mountPath: /tmp/user_input.yaml
+          subPath: user_input.yaml
+      volumes:
+      - name: monitoring-volume
+        persistentVolumeClaim:
+          claimName: monitoring-pvc
+      - name: ssh-config-volume
+        secret:
+          secretName: ssh-config
+      - name: monitoring-config-volume
+        configMap:
+          name: BASE-config

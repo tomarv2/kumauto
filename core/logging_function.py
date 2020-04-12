@@ -1,0 +1,55 @@
+import sys, os
+from core.base_function import *
+import logging
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+# todo: change class name to CapWords convention
+class logger:
+    logger_file = logging.getLogger(__name__)
+
+    def __init__(self):
+        print(" ")
+
+    @classmethod
+    def configure(cls, requirements_yaml= None):
+        if requirements_yaml is not None:
+            project_name = get_project_name(requirements_yaml)
+        else:
+            project_name = 'EA/Prom_repo'
+        config_yaml = '/automation/config.yaml'
+
+        # Create the Logger
+        cls.logger_file = logging.getLogger(project_name)
+        cls.logger_file.setLevel(logging.DEBUG)
+
+        # Create the Handler for logging data to a file
+        ensure_file_exists_append_mode(read_logfile_location(config_yaml))
+        logger_file_handler = logging.FileHandler(read_logfile_location(config_yaml))
+        logger_file_handler.setLevel(logging.DEBUG)
+
+        # Create a Formatter for formatting the log messages
+        logger_file_formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
+
+        # Add the Formatter to the Handler
+        logger_file_handler.setFormatter(logger_file_formatter)
+
+        # Add the Handler to the Logger
+        cls.logger_file.addHandler(logger_file_handler)
+        cls.logger_file.info('Completed configuring logger_file()!')
+
+    @classmethod
+    def info(cls, msg, *args):
+        cls.logger_file.info(msg, *args)
+
+    @classmethod
+    def debug(cls, msg, *args):
+        cls.logger_file.debug(msg, *args)
+
+    @classmethod
+    def error(cls, msg, *args):
+        cls.logger_file.error(msg, *args)
+
+    @classmethod
+    def warning(cls, msg, *args):
+        cls.logger_file.warning(msg, *args)

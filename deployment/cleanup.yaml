@@ -1,0 +1,39 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: sharedservices
+  name: BASE-cleanup
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        cluster: BASE-cleanup
+    spec:
+      terminationGracePeriodSeconds: 10
+      imagePullSecrets:
+      - name: us-west-2-ecr-registry
+      containers:
+      - name: BASE-cleanup
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+        image: dcr.devlabs.com/devlabs/devops/automation-base: # <resolve at runtime>
+        command:
+          - "/bin/sh"
+          - "-c"
+          - >
+            set -x;
+            python /automation/cleanup_kafka/main.py;
+            sleep 60
+        volumeMounts:
+        - name: config-volume
+          mountPath: /tmp/user_input.yaml
+      volumes:
+      - name: config-volume
+        configMap:
+          name: BASE-config

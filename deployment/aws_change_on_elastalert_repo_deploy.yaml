@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: sharedservices
+  name: monitoring
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        cluster: monitoring
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: monitoring
+        image: dcr.devlabs.com/devlabs/devops/monitoring-base:v250
+        command:
+          - "/bin/sh"
+          - "-c"
+          - >
+            set -x;
+            wget http://git.demo.com:7990/projects/DOPS/repos/elastalert/raw/config.yaml -O /tmp/config.yaml;
+            python /automation/change_on_elastalert_repo/deploy_monitoring.py \
+                /mnt/monitoring/alertmanager/alertmanager/alertmanager.yaml \
+                /mnt/monitoring/prometheus/prometheus/prometheus.yaml \
+                /mnt/monitoring/prometheus/rules \
+                /mnt/monitoring/prometheus/static_files /tmp/config.yaml ONPREM-QA;
+            sleep infinity
+        volumeMounts:
+        - name: monitoring-nfs-volume
+          mountPath: /mnt
+      volumes:
+      - name: monitoring-nfs-volume
+        persistentVolumeClaim:
+          claimName: monitoring-nfs-pvc

@@ -1,0 +1,68 @@
+###############################################################################
+# NOTE:
+    # for microservice add project as:       testrepo-service
+    # for spark add project as:              testrepo-transform
+    # for nifi add project as:               testrepo-sync
+###############################################################################
+
+
+monitoring:
+  project: # NOTE: append project name with: service, transform or sync
+    - 'testrepo-service'
+
+  namespace:  # available options: devops and services
+    - 'services'
+
+  notification:
+    email:
+      - test-email@devlabs.com
+    pagerduty: # only applicable for prod
+      service_key:
+        - '123abc'
+    slack:
+      channel:
+        - test-alerts
+
+  target:
+    onprem-qa:
+      - <endpoint to monitor>
+    onprem-stg:
+      - <endpoint to monitor>
+    onprem:
+      - <endpoint to monitor>
+    aws-stg:
+      - <endpoint to monitor>
+    aws:
+      - <endpoint to monitor>
+
+  elastalert:
+    query:
+      onprem-qa:
+        - NA_ELASTALERT
+      onprem-stg:
+        - NA_ELASTALERT
+      onprem:
+        - NA_ELASTALERT
+      aws-stg:
+        - NA_ELASTALERT
+      aws:
+        - NA_ELASTALERT
+
+  tools:
+    - prometheus
+    - alertmanager
+    - elastalert
+
+  modules:
+    - blackbox
+
+kafka: # (default value is No) only applicable in Dev and QA
+  delete_topic: No # please write YES_DELETE to confirm topic deletion
+  server: qakafka.onpremtest.devlabs.com
+  topic:
+   - test-topic01
+   - test-topic02
+
+zookeeper:
+  server: zk.devlabs.com:2181/kafka
+

@@ -1,0 +1,4 @@
+- labels:
+    job: USER_INPUT_PROJECT_NAME-blackbox
+  targets:
+  - USER_INPUT_ENDPOINT
