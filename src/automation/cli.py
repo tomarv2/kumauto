@@ -61,9 +61,11 @@ def entrypoint():
         os.environ["TEST_ALERTMANAGER"] = "1"
         os.environ["TEST_PROMETHEUS"] = "1"
         os.environ["TEST_ELASTALERT"] = "1"
-    ######################################################
+    # -------------------------------------------------------------------------
+    #
     # Test the new files
-    ######################################################
+    #
+    # -------------------------------------------------------------------------
     if os.environ["TEST_ALERTMANAGER"] == "0":
         logger.debug("TESTING ALERTMANAGER...")
         if validate_alartmanager_config(parser.alertmanager_config_file_path):
@@ -89,10 +91,11 @@ def entrypoint():
             os.environ["TEST_ELASTALERT"] = "1"
             logger.debug("ELASTALERT validation didn't pass...")
 
-
-    ######################################################
+    # -------------------------------------------------------------------------
+    #
     # Push the new files
-    ######################################################  
+    #
+    # -------------------------------------------------------------------------  
     if os.environ["TEST_ALERTMANAGER"] == "0":
         update_alertmanager(user_input_env_lower, parser.project_name, parser.alertmanager_config_file_path)
     if os.environ["TEST_PROMETHEUS"] == "0": 
@@ -101,9 +104,11 @@ def entrypoint():
     if os.environ["TEST_ELASTALERT"] == "0":
         update_elastalert(user_input_env_lower, parser.project_name, parser.elastalert_rules_dir)
 
-    ######################################################
+    # -------------------------------------------------------------------------
+    #
     # Cleanup temporary files
-    ######################################################  
+    #
+    # -------------------------------------------------------------------------  
     cleanup(parser.monitoring_rules_dir, parser.monitoring_static_file_dir, parser.monitoring_config_file_path, parser.alertmanager_config_file_path)
 
 

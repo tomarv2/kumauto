@@ -19,7 +19,9 @@ current_values_in_alertmanager = []
 
 
 # -------------------------------------------------------------
+#
 # BUILD THE FILES OF ALERTMANAGER
+#
 # -------------------------------------------------------------
 def build_alertmanager(user_input_env, project_name, alertmanager_config_file_path, modules, tools, email_to, slack_channel, pagerduty_service_key_id):
     logger.info("=" * 75)
@@ -38,7 +40,9 @@ def build_alertmanager(user_input_env, project_name, alertmanager_config_file_pa
 
 
 # -------------------------------------------------------------
+#
 # CHECK WHETHER THE PROJECT ALREADY EXIST IN ALERTMANAGER CONFIG FILE
+#
 # -------------------------------------------------------------
 def alertmanager_validate_current_setup(basefile_list, project_name, env):
     logger.info("=" * 75)
@@ -77,7 +81,9 @@ def alertmanager_validate_current_setup(basefile_list, project_name, env):
 
 
 # -------------------------------------------------------------
+#
 # ADD THE NEW PROJECT IN ALERTMANAGER CONFIG FILE
+#
 # -------------------------------------------------------------
 def alertmanager_create_new_entry(alertmanager_file, prj_name, modules, env, tools, to_email_list, slack_channel, pagerduty_service_key_id):
     logger.info("=" * 75)
@@ -191,7 +197,9 @@ def prod_alertmanager(alertmanager_file, prj_name, modules, env, to_email_list, 
 
 
 # -------------------------------------------------------------
+#
 # UPDATE THE PROJECT INFORMATION IN ALERTMANAGER CONFIG FILE
+#
 # -------------------------------------------------------------
 def alertmanager_replace_existing_entry(alertmanager_file, prj_name, tools, to_email_list, env, slack_channel, pagerduty_service_key_id):
     logger.info("=" * 75)
@@ -244,7 +252,9 @@ def alertmanager_replace_existing_entry(alertmanager_file, prj_name, tools, to_e
 
 
 # -------------------------------------------------------------
+#
 # APPLY CHANGES TO NFS/EFS AND GITHUB FOR ALERTMANAGER
+#
 # -------------------------------------------------------------
 def update_alertmanager(env, project_name, alertmanager_config_file_path):
     logger.info("=" * 75)

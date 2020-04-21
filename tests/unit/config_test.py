@@ -9,7 +9,7 @@ requirements_monitoring_yaml = ['project', 'namespace', 'notification', 'tools',
 requirements_cleanup_yaml = ['server', 'topic', 'delete_topic']
 available_namespaces = ['demo', 'services']
 available_project_name_extensions = ['service', 'transform', 'sync']
-env_in_list = ['onprem-qa', 'onprem-stg', 'onprem', 'aws-stg', 'aws']
+env_in_list = ['aws-stg', 'aws']
 
 monitoring_out_list = []
 cleanup_out_list = []

@@ -47,9 +47,11 @@ def update_github_prometheus(prometheus_rules_dir, prometheus_static_files_dir, 
     logger.debug("prometheus: checkout branch: %s", branch)
     checkout_branch(git_ssh_cmd, repo_instance, branch)
 
-    # ############################################
+    # -------------------------------------------------------------------------
+    #
     #    Update prometheus rules
-    # ############################################
+    #
+    # -------------------------------------------------------------------------
     logger.info("prometheus: list dir and copy from: %s to : %s", prometheus_rules_dir, prometheus_rules_path)
     src_files = os.listdir(prometheus_rules_dir)
     for rule_file_name in src_files:
@@ -83,9 +85,11 @@ def update_github_prometheus(prometheus_rules_dir, prometheus_static_files_dir, 
         except BaseException:
             logger.info("prometheus: directory/files already exists: %s", prometheus_rules_path)
 
-    # ############################################
+    # -------------------------------------------------------------------------
+    #
     #    Update prometheus static files
-    # ############################################
+    #
+    # -------------------------------------------------------------------------
     logger.info("prometheus: list dir and copy from: %s to : %s", prometheus_static_files_dir, prometheus_static_files_path)
     src_files = os.listdir(prometheus_static_files_dir)
     for static_file_name in src_files:
@@ -116,10 +120,11 @@ def update_github_prometheus(prometheus_rules_dir, prometheus_static_files_dir, 
         except BaseException:
             logger.info( "prometheus: directory/files already exists: %s", prometheus_static_files_path)
 
-
-    #############################################
+    # -------------------------------------------------------------------------
+    #
     #    Update prometheus config
-    # ############################################    
+    #
+    # -------------------------------------------------------------------------
     for target in get_list_env(env):
         prometheus_config_path_env = os.path.join(prometheus_config_path, target)
         logger.debug( "prometheus: copy from: %s to : %s", prometheus_config_file, os.path.join(prometheus_config_path,'config.yaml'))
@@ -158,16 +163,17 @@ def update_github_prometheus(prometheus_rules_dir, prometheus_static_files_dir, 
                     prometheus_config_path_env,
                     'config.yaml'))
 
-    # ############################################
+    # -------------------------------------------------------------------------
+    #
     #    Commit and push all changes
-    # ############################################
+    #
+    # -------------------------------------------------------------------------
     logger.debug("prometheus: git commit...")
     commit_changes(git_ssh_cmd,repo_instance,branch,project_name)
     logger.debug("prometheus: git push...")
     push_changes(git_ssh_cmd, repo_instance, branch)
     logger.info('-' * 75)
 
-## ********************************************************************************************************************* ##
 
 def update_github_alertmanager(alertmanager_config_file, project_name, env):
     # prase config file
@@ -203,10 +209,11 @@ def update_github_alertmanager(alertmanager_config_file, project_name, env):
     logger.debug("prometheus: checkout branch: %s", branch)
     checkout_branch(git_ssh_cmd, repo_instance, branch)
 
-    # ############################################
+    # -------------------------------------------------------------------------
+    #
     #    Update alertmanager config
-    # ############################################
-
+    #
+    # -------------------------------------------------------------------------
     for target in get_list_env(env):
         alertmanager_config_path_env = os.path.join(alertmanager_config_path, target)
         logger.info("prometheus: copy from: %s to : %s", alertmanager_config_file, os.path.join(alertmanager_config_path_env, 'config.yaml'))
@@ -236,10 +243,11 @@ def update_github_alertmanager(alertmanager_config_file, project_name, env):
                 "prometheus: directory/files already exists: %s",
                 os.path.join(alertmanager_config_path_env, 'config.yaml'))
 
-
-    # ############################################
+    # -------------------------------------------------------------------------
+    #
     #    Commit and push all changes
-    # ############################################
+    #
+    # -------------------------------------------------------------------------
     logger.debug("prometheus: git commit...")
     commit_changes(git_ssh_cmd,repo_instance,branch,project_name)
     logger.debug("prometheus: git push...")

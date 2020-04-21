@@ -22,7 +22,7 @@ spec:
           limits:
             cpu: 500m
             memory: 1Gi
-        image: dcr.demo.com/demo/devops/automation-base: # <resolve at runtime>
+        image: dcr.demo.com/demo/devops/automation-base:# <resolve at runtime>
         command:
           - "/bin/sh"
           - "-c"
