@@ -12,7 +12,7 @@ mapping:
   name: 
     type: str
     required: True
-    # pattern: "onprem|onprem-qa|onprem-stg|prod-stg|aws|aws-stg.*"
+    # pattern: "aws|aws-stg.*"
   type: 
     type: str
     required: True
