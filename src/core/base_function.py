@@ -1,4 +1,4 @@
-import yaml
+#import yaml
 import os
 import docker
 import hashlib, time
@@ -7,6 +7,7 @@ from staticconf.loader import yaml_loader
 from kazoo.client import KazooClient
 #from core.logging_function import logger
 client = docker.from_env()
+import ruamel.yaml as yaml
 
 
 def get_application_type(project_name):
@@ -77,7 +78,9 @@ def convert_list_to_ea_query(list):
 def read_logfile_location(config_yaml):
     with open(config_yaml, 'r') as stream_config:
         out_config = yaml.load(stream_config)
-        return out_config['log']['filename'][0]
+        print("------------")
+        print (out_config['log']['filename'])
+        return out_config['log']['filename']
 
 
 def read_log_level(config_yaml):
@@ -89,13 +92,15 @@ def read_log_level(config_yaml):
 def ensure_dir_exists(dir_name):
     if not os.path.exists(dir_name):
         try:
+            print("creating dir: ", dir_name)
             os.makedirs(dir_name)
         except OSError:
-            # logger.debug("Unable to create directory: %s", dir_name)
+            print("Unable to create directory: %s", dir_name)
             pass
 
 
 def ensure_file_exists_append_mode(file_path):
+    print("inside ensure_file_exists_append_mode, filepath: ", file_path)
     dir_name = os.path.dirname(file_path)
     ensure_dir_exists(dir_name)
     if os.path.exists(file_path):
@@ -104,15 +109,18 @@ def ensure_file_exists_append_mode(file_path):
         open(file_path, 'a').close()
 #ensure_file_exists_append_mode('/tmp/test.txt')
 
+
 def get_project_name(requirements_yaml_path):
     with open(requirements_yaml_path, 'r') as stream_config:
         out_config = yaml.load(stream_config)
         return out_config['monitoring']['project'][0]
 
+
 def get_project_name_env(requirements_yaml_path, env):
     with open(requirements_yaml_path, 'r') as stream_config:
         out_config = yaml.load(stream_config)
         return env + '-' + out_config['monitoring']['project'][0]
+
 
 def convert_list_to_slack_channel(list):
     query_string = '\n  - send_resolved: true \n    api_url: https://hooks.slack.com/services/XYZ\n    channel:  '.join(
@@ -122,14 +130,10 @@ def convert_list_to_slack_channel(list):
 
 def get_list_env(env):
     list_env = []
-    if env in ['aws','aws-stg']:
+    if env in ['aws']:
         list_env.append('aws')
+    elif env in ['aws-stg']:
         list_env.append('aws-stg')
-    elif env in ['onprem','onprem-stg']:
-        list_env.append('onprem')
-        list_env.append('onprem-stg')
-    elif env in ['onprem-qa']:
-        list_env.append('onprem-qa')
     return list_env
 
 
@@ -205,7 +209,6 @@ def validate_yaml(yaml_file):
         raise Exception('Could not parse yaml file %s: %s' % (yaml_file, e))
 
 
-    
 def cleanup(prometheus_rules_dir, prometheus_static_file_dir, prometheus_config_file_path, alertmanager_config_file_path):
     rules_files = os.listdir(prometheus_rules_dir)
     for rule_file in rules_files:
@@ -238,7 +241,6 @@ def cleanup(prometheus_rules_dir, prometheus_static_file_dir, prometheus_config_
         except BaseException:
             # logger.error("prometheus: unable to delete file: %s", alertmanager_config_file_path + "-updated.yaml")
             pass
-
 
 
 # compare the content of two files, if mismatches, return false

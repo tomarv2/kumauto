@@ -1,52 +1,53 @@
+# files for prometheus
 prometheus:
   alertmanager:
     config:
       file_path:
-      - /mnt/monitoring/prometheus/alertmanager/config.yaml
+      - /Users/varun.tomar/Documents/personal_github/automation/src/config.yaml
       nfs_path:
-      - /mnt/monitoring/prometheus/alertmanager/config.yaml
+      - /Users/varun.tomar/Documents/personal_github/automation/src/config.yaml
   monitoring:
     config:
       file_path:
-        - /mnt/monitoring/prometheus/monitoring/config.yaml
+        - /Users/varun.tomar/Documents/personal_github/automation/src/config.yaml
       nfs_path:
-        - /mnt/monitoring/prometheus/monitoring/config.yaml
+        - /Users/varun.tomar/Documents/personal_github/automation/src/config.yaml
     rules:
       dir:
-        - /mnt/monitoring/prometheus/monitoring/rules
+        - /tmp/prometheus/monitoring/rules
       sample_file:
-        - /automation/change_on_user_repo/sample-files/sample-rules.yaml
+        - /data/sample-files/sample-rules.yaml
       sample_file_spark:
-        - /automation/change_on_user_repo/sample-files/sample-rules-spark.yaml
+        - /data/sample-files/sample-rules-spark.yaml
       nfs_path:
-        - /mnt/monitoring/prometheus/monitoring/rules
+        - /tmp/prometheus/monitoring/rules
     static_file:
       dir:
-        - /mnt/monitoring/prometheus/monitoring/static_files
+        - /Users/varun.tomar/Documents/personal_github/automation/data/sample-files
       sample_file:
-        - /automation/change_on_user_repo/sample-files/sample-staticfile.yaml
+        - /data/sample-files/sample-staticfile.yaml
       nfs_path:
-        - /mnt/monitoring/prometheus/monitoring/static_files
+        - /tmp/prometheus/monitoring/static_files
     repo:
       path:
         - /tmp/update_github_prometheus/prometheus
       url:
         - ssh://git@git.demo.com:7999/dp/prometheus.git
 
-
+# files for elastalert
 elastalert:
   rules:
     dir:
-    - /mnt/monitoring/elastalert/rules
+    - /tmp/monitoring/elastalert/rules
     nfs_path:
-    - /mnt/monitoring/elastalert/rules
+    - /tmp/monitoring/elastalert/rules
     sample_file:
-    - /automation/change_on_user_repo/sample-files/sample-elastalert-rules.yaml
+    - /data/sample-files/sample-elastalert-rules.yaml
   config:
     file_path:
-      - /mnt/monitoring/elastalert/config.yaml 
+      - /tmp/monitoring/elastalert/config.yaml 
     nfs_path:
-      - /mnt/monitoring/elastalert
+      - /tmp/monitoring/elastalert
   repo_url:
     - ssh://git@git.demo.com:7999/dp/elastalert.git
   repo_path:
@@ -54,10 +55,11 @@ elastalert:
   rules_repo_name:
     - 'rules'
   EA_rules_schema:
-    - /automation/change_on_user_repo/sample-files/EA-rules-schema.yaml
+    - /data/sample-files/EA-rules-schema.yaml
   temporary_ea_rules:
     - /tmp/temporary_ea_rules/
 
+# entry for elasticsearch
 elasticsearch:
   hostname:
     aws: elasticsearch.default
@@ -66,13 +68,16 @@ elasticsearch:
 branch:
   - development
 
+# pagerduty entry
 pagerduty_client_name:
   - elastalert
 
+# slack entry
 slack:
   channel:
     - None
-
+    -
+# elasticsearch entry
 index:
   nifi:
     - nifi-logs-*
@@ -90,10 +95,11 @@ env:
 
 log:
  filename:
-   - /mnt/monitoring/logs/automation.log
+   - /tmp/logs/automation.log
  level:
    - debug
 
+# kafka/zookeeper cleanup
 kafka_docker_image: mesosphere/kafka-client
 
 zookeeper_exclude_list:

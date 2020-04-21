@@ -2,9 +2,14 @@ import shutil
 from shutil import copyfile
 import os
 import yaml
+
+import sys
+sys.path.append("..")
+
+
 from core.logging_function import logger
 from core.base_function import *
-from git_push_elastalert import update_github_elastalert
+from .git_push_elastalert import update_github_elastalert
 
 
 current_list_of_projects = []
@@ -13,9 +18,11 @@ current_values_in_elastalert_rules = []
 config_yaml = '/automation/config.yaml'  
 
 
-#############################################################################################################
-# BUILD THE FILES OF ALASTALERT
-#############################################################################################################
+# ----------------------------------------------
+#
+# BUILD THE FILES OF ELASTALERT
+#
+# ----------------------------------------------
 def build_elastalert(user_input_env, project_name, elastalert_rules_dir, namespace, ea_query, elastalert_sample_file,
                      elasticsearch_hostname, email_to, pagerduty_service_key_id, pagerduty_client_name):
     logger.info("=" * 75)
@@ -42,9 +49,11 @@ def build_elastalert(user_input_env, project_name, elastalert_rules_dir, namespa
         logger.error("elastalert: unable to setup config...")
 
 
-#############################################################################################################
-# ADD THE NEW ALASTALERT RULES
-#############################################################################################################
+# --------------------------------------------------------
+#
+# ADD THE NEW ELASTALERT RULES
+#
+# --------------------------------------------------------
 def elastalert_rules_setup(elastalert_rules_dir, sample_file, project_name, index, ea_query, alert_type, email_to,
                      pagerduty_service_key_id, pagerduty_client_name, env, application, elasticsearch_hostname):
     logger.info("=" * 75)
@@ -131,9 +140,11 @@ pagerduty_client_name: {6}\n'''. format(elasticsearch_hostname, env + '-' + proj
     logger.info('-' * 75)
 
 
-#############################################################################################################
+# -------------------------------------------------------
+#
 # APPLY CHANGES TO NFS/EFS AND GITHUB FOR  ELASTALERT
-#############################################################################################################
+#
+# -------------------------------------------------------
 def update_elastalert(env, project_name, elastalert_rules_dir):
     logger.info("=" * 75)
     try:
@@ -142,6 +153,7 @@ def update_elastalert(env, project_name, elastalert_rules_dir):
         update_github_elastalert(os.path.join(elastalert_rules_dir, env), project_name, env)
     except BaseException:
         logger.error("promethues: failed to update elastalert files...")
+
 
 def update_elastalert_rules_dir(elastalert_rules_dir, env):
     with open(config_yaml, 'r') as stream_config:

@@ -24,7 +24,7 @@ spec:
                 /mnt/monitoring/alertmanager/alertmanager/alertmanager.yaml \
                 /mnt/monitoring/prometheus/prometheus/prometheus.yaml \
                 /mnt/monitoring/prometheus/rules \
-                /mnt/monitoring/prometheus/static_files /tmp/config.yaml ONPREM-QA;
+                /mnt/monitoring/prometheus/static_files /tmp/config.yaml aws-stg;
             sleep infinity
         volumeMounts:
         - name: monitoring-nfs-volume

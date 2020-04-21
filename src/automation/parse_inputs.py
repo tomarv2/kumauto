@@ -1,8 +1,12 @@
 import os
 import sys
-import yaml
+import ruamel.yaml as yaml
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import sys
+sys.path.append("..")
+
+#sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.base_function import *
 from core.logging_function import logger
 
@@ -27,10 +31,9 @@ class ParseInputs:
     #############################################################################################################
     def parse_user_config_yaml(self, requirements_yaml, config_yaml, user_input_env):
         logger.info("=" * 75)
-
         # parse requirements file
         with open(requirements_yaml, 'r') as stream:
-            out = yaml.load(stream)
+            out = yaml.load(stream, Loader=yaml.Loader)
             # project to monitor
             self.project_name = user_input_env + "-" + out['monitoring']['project'][0]
             # project to monitor
@@ -53,7 +56,7 @@ class ParseInputs:
         # parse config file
         with open(config_yaml, 'r') as stream_config:
             logger.info("=" * 75)
-            out_config = yaml.load(stream_config)
+            out_config = yaml.load(stream_config, Loader=yaml.Loader)
             self.alertmanager_config_file_path = out_config['prometheus']['alertmanager']['config']['file_path'][0]
             self.alertmanager_config_nfs_path = out_config['prometheus']['alertmanager']['config']['nfs_path'][0]
             self.monitoring_config_file_path = out_config['prometheus']['monitoring']['config']['file_path'][0]

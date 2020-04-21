@@ -3,19 +3,24 @@ import os
 import sys
 import fileinput
 import re
-import yaml
+import ruamel.yaml as yaml
 import shutil
+
+import sys
+sys.path.append("..")
+
+
 from core.logging_function import logger
 from core.base_function import *
-from git_push_prometheus import update_github_alertmanager
+from .git_push_prometheus import update_github_alertmanager
 
 
 current_values_in_alertmanager = []
 
 
-#############################################################################################################
+# -------------------------------------------------------------
 # BUILD THE FILES OF ALERTMANAGER
-#############################################################################################################
+# -------------------------------------------------------------
 def build_alertmanager(user_input_env, project_name, alertmanager_config_file_path, modules, tools, email_to, slack_channel, pagerduty_service_key_id):
     logger.info("=" * 75)
     alertmanager_fileloc = alertmanager_config_file_path
@@ -32,16 +37,16 @@ def build_alertmanager(user_input_env, project_name, alertmanager_config_file_pa
         logger.error("alertmanager: unable to update/create config...")
 
 
-#############################################################################################################
+# -------------------------------------------------------------
 # CHECK WHETHER THE PROJECT ALREADY EXIST IN ALERTMANAGER CONFIG FILE
-#############################################################################################################
+# -------------------------------------------------------------
 def alertmanager_validate_current_setup(basefile_list, project_name, env):
     logger.info("=" * 75)
     #full_project_name = project_name
     logger.info("alertmanager: validating if alert already exists for %s in config %s", project_name, basefile_list)
     try:
         with open(basefile_list, 'r') as stream:
-            out = yaml.load(stream)
+            out = yaml.load(stream, Loader=yaml.Loader)
             try:
                 logger.debug("alertmanager: getting list of currently monitored projects...")
                 current_values_in_alertmanager.append(out['route']['routes'])
@@ -71,9 +76,9 @@ def alertmanager_validate_current_setup(basefile_list, project_name, env):
         pass
 
 
-#############################################################################################################
+# -------------------------------------------------------------
 # ADD THE NEW PROJECT IN ALERTMANAGER CONFIG FILE
-#############################################################################################################
+# -------------------------------------------------------------
 def alertmanager_create_new_entry(alertmanager_file, prj_name, modules, env, tools, to_email_list, slack_channel, pagerduty_service_key_id):
     logger.info("=" * 75)
     if 'alertmanager' in tools:
@@ -185,9 +190,9 @@ def prod_alertmanager(alertmanager_file, prj_name, modules, env, to_email_list, 
         asmw.writelines(alert_receiver)
 
 
-#############################################################################################################
+# -------------------------------------------------------------
 # UPDATE THE PROJECT INFORMATION IN ALERTMANAGER CONFIG FILE
-#############################################################################################################
+# -------------------------------------------------------------
 def alertmanager_replace_existing_entry(alertmanager_file, prj_name, tools, to_email_list, env, slack_channel, pagerduty_service_key_id):
     logger.info("=" * 75)
     logger.debug("alertmanager: file location: %s", alertmanager_file)
@@ -238,9 +243,9 @@ def alertmanager_replace_existing_entry(alertmanager_file, prj_name, tools, to_e
                 raise SystemExit
 
 
-#############################################################################################################
+# -------------------------------------------------------------
 # APPLY CHANGES TO NFS/EFS AND GITHUB FOR ALERTMANAGER
-#############################################################################################################
+# -------------------------------------------------------------
 def update_alertmanager(env, project_name, alertmanager_config_file_path):
     logger.info("=" * 75)
     try:

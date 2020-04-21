@@ -1,21 +1,38 @@
 import os
 import re
 import time
-import yaml
+import ruamel.yaml as yaml
+
+import sys
+sys.path.append("..")
+
+
 import in_place
 from shutil import copyfile
 from core.logging_function import logger
 from core.base_function import *
-from git_push_prometheus import update_github_prometheus
+from .git_push_prometheus import update_github_prometheus
 
 current_values_in_prometheus_config = []
 
-#########################################################################
+
+# ----------------------------------------------------
+#
 # BUILD THE FILES OF PROMETHEUS
-#########################################################################
-def build_prometheus(config_yaml, user_input_env, monitoring_config_file_path, monitoring_rules_dir,
-                     monitoring_static_file_dir, project_name, targets_to_monitor, monitoring_rules_sample_file,
-                     monitoring_static_file_sample_file, modules, project_name_without_env):
+#
+# ----------------------------------------------------
+def build_prometheus(config_yaml,
+                     user_input_env,
+                     monitoring_config_file_path,
+                     monitoring_rules_dir,
+                     monitoring_static_file_dir,
+                     project_name,
+                     targets_to_monitor,
+                     monitoring_rules_sample_file,
+                     monitoring_static_file_sample_file,
+                     modules,
+                     project_name_without_env
+                     ):
     logger.info("=" * 75)
     prometheus_fileloc = monitoring_config_file_path
     prometheus_rules_dir = monitoring_rules_dir
@@ -62,9 +79,11 @@ def build_prometheus(config_yaml, user_input_env, monitoring_config_file_path, m
         logger.error("prometheus: verification stage failed...")
 
 
-#############################################################################################################
+# ---------------------------------------------------------------------------------------------------
+#
 # CHECK WHETHER THE PROJECT ALREADY EXIST IN PROMETHEUS CONFIG FILE
-#############################################################################################################
+#
+# ---------------------------------------------------------------------------------------------------
 def prometheus_validate_current_setup(prometheus_basefile, project, module, env):
     logger.info("=" * 75)
     logger.info("prometheus: validating if alert already exists...")
@@ -75,7 +94,7 @@ def prometheus_validate_current_setup(prometheus_basefile, project, module, env)
     final_project_name = project + '-' + module
     logger.debug("prometheus: final configured project name: %s", final_project_name)
     with open(prometheus_basefile, 'r') as stream:
-        out = yaml.load(stream)
+        out = yaml.load(stream, Loader=yaml.Loader)
         try:
             current_values_in_prometheus_config.append(out['scrape_configs'])
         except BaseException:
@@ -100,9 +119,9 @@ def prometheus_validate_current_setup(prometheus_basefile, project, module, env)
         pass
 
 
-#############################################################################################################
+#---------------------------------------------------------------------------------------------------#####################################
 # ADD THE NEW PROJECT IN PROMETHEUS CONFIG FILE
-#############################################################################################################
+#---------------------------------------------------------------------------------------------------#####################################
 def prometheus_config(prometheus_fileloc, prj_name, env):
     logger.info("=" * 75)
     alert_route = []
@@ -162,9 +181,9 @@ def prometheus_config(prometheus_fileloc, prj_name, env):
         asmw.writelines(alert_receiver)    
 
 
-#############################################################################################################
+#---------------------------------------------------------------------------------------------------#####################################
 # ADD NEW RULE FOR THE PROJECT 
-#############################################################################################################
+#---------------------------------------------------------------------------------------------------#####################################
 def rules_setup(rules_dir, sample_file, project_name, env, project_name_without_env):
     #current_list_of_projects = []
     rules_file_name = os.path.join(rules_dir, project_name) + '-blackbox.yaml' + "-updated.yaml"
@@ -213,9 +232,9 @@ def rules_setup(rules_dir, sample_file, project_name, env, project_name_without_
         f.write(newdata)
 
 
-#############################################################################################################
+#---------------------------------------------------------------------------------------------------#####################################
 # ADD NEW STATIC FILE FOR THE PROJECT 
-#############################################################################################################
+#---------------------------------------------------------------------------------------------------#####################################
 def static_files_setup(prometheus_staticfiles_dir, staticfiles_sample_file, project_name, targets_to_monitor, env):
     #current_list_of_projects = []
     logger.info("=" * 75)
@@ -272,9 +291,9 @@ def static_files_setup(prometheus_staticfiles_dir, staticfiles_sample_file, proj
     f.close()
 
 
-#############################################################################################################
+#---------------------------------------------------------------------------------------------------#####################################
 # UPDATE THE TARGETS IN THE STATIC FILES 
-#############################################################################################################
+#---------------------------------------------------------------------------------------------------#####################################
 def update_targets(prometheus_staticfiles_dir, project_name, end_point, modules, env):
     old_targets = []
     new_targets = []
@@ -317,9 +336,9 @@ def update_targets(prometheus_staticfiles_dir, project_name, end_point, modules,
     logger.info('-' * 75)
 
 
-#############################################################################################################
+#---------------------------------------------------------------------------------------------------#####################################
 # APPLY CHANGES TO NFS/EFS AND GITHUB FOR PROMETHEUS
-#############################################################################################################
+#---------------------------------------------------------------------------------------------------#####################################
 def update_prometheus(env, project_name, monitoring_config_file_path, monitoring_rules_dir, monitoring_static_file_dir):
     logger.info("=" * 75)
     try:

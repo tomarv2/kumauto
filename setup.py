@@ -1,35 +1,42 @@
 import os
-from setuptools import setup, find_packages
-base_dir = os.path.dirname(__file__)
+#from setuptools import setup, find_packages
 
+from setuptools import find_packages, setup
+from setuptools.command.develop import develop as DevelopCommand
+from setuptools.command.sdist import sdist as SDistCommand
+
+#base_dir = os.path.dirname(__file__)
+
+VERSION = "0.0.1.dev0"
+
+ROOT_PATH = os.path.abspath(os.path.dirname(__file__))
+
+
+def get_requirements(env):
+
+    with open("requirements-{}.txt".format(env)) as fp:
+        # print([x.strip() for x in fp.read().split("\n") if not x.startswith("#")])
+        return [x.strip() for x in fp.read().split("\n") if not x.startswith("#")]
+
+
+install_requires = get_requirements("base")
 
 setup(
     name='automation',
-    version='0.0.3',
-    description='automation',
+    version=VERSION,
+    description='automating deployment of monitoring tools',
     author='demo',
     author_email='demo@demo.com',
-    setup_requires='setuptools',
-    packages=find_packages(),
-    # packages=['change_on_user_repo'],
-    classifiers=[
+    python_requires=">=3.7",
+    package_dir={"": "src"},
+    packages=find_packages("src"),
+    #zip_save=False,
+    include_package_data=True,
+    classifiers=[  # Optional
         'Programming Language :: Python :: 3.6',
         'Operating System :: OS Independent',
     ],
+    install_requires=install_requires,
     entry_points={
-        'console_scripts': ['main=change_on_user_repo:main']},
-    install_requires=[
-        'certifi==2018.4.16',
-        'chardet==3.0.4',
-        'gitdb2==2.0.3',
-        'GitPython==2.1.10',
-        'idna==2.7',
-        'in-place==0.2.0',
-        'PyYAML==3.12',
-        'requests==2.19.1',
-        'six==1.11.0',
-        'smmap2==2.0.3',
-        'urllib3==1.23',
-        'yamllint==1.11.1'
-    ]
+        'console_scripts': ['automation = automation.cli:entrypoint']}
 )

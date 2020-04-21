@@ -17,7 +17,7 @@ class logger:
             project_name = get_project_name(requirements_yaml)
         else:
             project_name = 'EA/Prom_repo'
-        config_yaml = '/automation/config.yaml'
+        config_yaml = '/Users/varun.tomar/Documents/personal_github/automation/src/config.yaml'
 
         # Create the Logger
         cls.logger_file = logging.getLogger(project_name)

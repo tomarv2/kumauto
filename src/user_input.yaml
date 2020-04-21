@@ -24,12 +24,6 @@ monitoring:
         - test-alerts
 
   target:
-    onprem-qa:
-      - <endpoint to monitor>
-    onprem-stg:
-      - <endpoint to monitor>
-    onprem:
-      - <endpoint to monitor>
     aws-stg:
       - <endpoint to monitor>
     aws:
@@ -37,12 +31,6 @@ monitoring:
 
   elastalert:
     query:
-      onprem-qa:
-        - NA_ELASTALERT
-      onprem-stg:
-        - NA_ELASTALERT
-      onprem:
-        - NA_ELASTALERT
       aws-stg:
         - NA_ELASTALERT
       aws:

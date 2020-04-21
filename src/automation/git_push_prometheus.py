@@ -1,4 +1,8 @@
 import shutil, os, sys
+
+import sys
+sys.path.append("..")
+
 from core.git_actions import *
 import yaml
 from core.logging_function import logger
