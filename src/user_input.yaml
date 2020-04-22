@@ -17,13 +17,12 @@ monitoring:
   notification:
     email:
       - test-email@demo.com
-    pagerduty: # only applicable for prod
+    pagerduty:
       service_key:
         - '123abc'
     slack:
       channel:
         - test-alerts
-
   target:
     aws-stg:
       - <endpoint to monitor>
@@ -45,8 +44,8 @@ monitoring:
   modules:
     - blackbox
 
-kafka: # (default value is No) only applicable in Dev and QA
-  delete_topic: No # please write YES_DELETE to confirm topic deletion
+kafka: # (default value is NO, # please update it to YES_DELETE to confirm topic deletion)
+  delete_topic: No
   server: qakafka.onpremtest.demo.com
   topic:
    - test-topic01

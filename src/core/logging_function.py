@@ -12,7 +12,7 @@ class logger:
         print(" ")
 
     @classmethod
-    def configure(cls, requirements_yaml= None):
+    def configure(cls, requirements_yaml=None):
         if requirements_yaml is not None:
             project_name = get_project_name(requirements_yaml)
         else:

@@ -11,10 +11,10 @@ logger.configure(None)
 
 
 def main():
-    logger.info("Checking the format of yaml file")
+    logger.error("Checking the format of yaml file")
     print("validating yaml files...")
     if (validate_yaml(requirements_yaml)) == 0 and validate_yaml(config_yaml) == 0:
-        logger.info("validation of yaml passed...")
+        logger.error("validation of yaml passed...")
         with open(requirements_yaml, 'r') as stream:
             out = yaml.load(stream)
             topic_name = []

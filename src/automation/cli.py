@@ -25,7 +25,7 @@ user_input_env = 'aws'
 
 def entrypoint():
     user_input_env_lower = user_input_env.lower()
-    logger.info("Checking the format of yaml file")
+    logger.error("Checking the format of yaml file")
     parser = ParseInputs()
     parser.parse_user_config_yaml(requirements_yaml, config_yaml, user_input_env_lower)
     os.environ["TEST_ALERTMANAGER"] = "1"
@@ -44,6 +44,15 @@ def entrypoint():
         # Build the new files
         #
         # ----------------------------------------------------
+        print("-" * 75)
+        print("user_input_env_lower: ", user_input_env_lower)
+        print("parser.project_name: ", parser.project_name)
+        print("parser.alertmanager_config_file_path: ", parser.alertmanager_config_file_path)
+        print("parser.modules: ", parser.modules)
+        print("parser.tools: ", parser.tools)
+        print("parser.email_to: ", parser.email_to)
+        print("parser.slack_channel: ", parser.slack_channel)
+        print("parser.pagerduty_service_key_id: ", parser.pagerduty_service_key_id)
         build_alertmanager(user_input_env_lower, parser.project_name, parser.alertmanager_config_file_path,
                            parser.modules, parser.tools, parser.email_to, parser.slack_channel, parser.pagerduty_service_key_id)
         os.environ["TEST_ALERTMANAGER"] = "0"
@@ -57,7 +66,7 @@ def entrypoint():
                          parser.email_to, parser.pagerduty_service_key_id, parser.pagerduty_client_name)
         os.environ["TEST_ELASTALERT"] = "0"
     else:
-        logger.debug("yaml files validation didn't pass...")
+        logger.error("yaml files validation didn't pass...")
         os.environ["TEST_ALERTMANAGER"] = "1"
         os.environ["TEST_PROMETHEUS"] = "1"
         os.environ["TEST_ELASTALERT"] = "1"
@@ -67,29 +76,29 @@ def entrypoint():
     #
     # -------------------------------------------------------------------------
     if os.environ["TEST_ALERTMANAGER"] == "0":
-        logger.debug("TESTING ALERTMANAGER...")
+        logger.error("TESTING ALERTMANAGER...")
         if validate_alartmanager_config(parser.alertmanager_config_file_path):
             os.environ["TEST_ALERTMANAGER"] = "0"
         else:
             os.environ["TEST_ALERTMANAGER"] = "1"
-            logger.debug("ALERTMANAGER validation didn't pass...")
+            logger.error("ALERTMANAGER validation didn't pass...")
 
     if os.environ["TEST_PROMETHEUS"] == "0":
-        logger.debug("TESTING PROMETHEUS...")
+        logger.error("TESTING PROMETHEUS...")
         if validate_prometheus_config(parser.monitoring_config_file_path) and validate_prometheus_rules\
              (parser.monitoring_rules_dir) and validate_prometheus_static_files(parser.monitoring_static_file_dir):
             os.environ["TEST_PROMETHEUS"] = "0"
         else:
             os.environ["TEST_PROMETHEUS"] = "1"
-            logger.debug("PROMETHEUS validation didn't pass...")
+            logger.error("PROMETHEUS validation didn't pass...")
 
     if os.environ["TEST_ELASTALERT"] == "0":
-        logger.debug("TESTING ELASTALERT...")
+        logger.error("TESTING ELASTALERT...")
         if validate_elastalert_rules(parser.temporary_ea_rules, user_input_env_lower):
             os.environ["TEST_ELASTALERT"] = "0"
         else:
             os.environ["TEST_ELASTALERT"] = "1"
-            logger.debug("ELASTALERT validation didn't pass...")
+            logger.error("ELASTALERT validation didn't pass...")
 
     # -------------------------------------------------------------------------
     #

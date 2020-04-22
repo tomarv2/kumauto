@@ -24,28 +24,28 @@ def md5sum(filename):
 
 
 def lockfiles_setup(base_file, backup_file):
-    logger.info("locking file - base_file: %s", base_file)
-    logger.info("locking file - backup_file: %s", backup_file)
+    logger.error("locking file - base_file: %s", base_file)
+    logger.error("locking file - backup_file: %s", backup_file)
     base_file_checksum.append(md5sum(base_file))
     backup_file_checksum.append(md5sum(backup_file))
     lock = FileLock(lock_path)
     with lock:
-        logger.info("-" * 50)
-        logger.debug("\nbefore lock...")
+        logger.error("-" * 75)
+        logger.error("\nbefore lock...")
     lock.acquire()
     try:
-        logger.info("-" * 50)
-        logger.debug("during lock...")
-        logger.info("-" * 50)
+        logger.error("-" * 75)
+        logger.error("during lock...")
+        logger.error("-" * 75)
         try:
             shutil.copy2(base_file, backup_file)
         except:
-            logger.debug("unable to write to destination")
+            logger.error("unable to write to destination")
             raise SystemExit
 
     finally:
-        logger.info("-" * 50)
-        logger.debug("releasing lock...")
+        logger.error("-" * 75)
+        logger.error("releasing lock...")
         lock.release()
 
 

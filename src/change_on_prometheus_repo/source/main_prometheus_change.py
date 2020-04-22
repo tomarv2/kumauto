@@ -30,8 +30,8 @@ git_ssh_cmd = 'ssh -o StrictHostKeyChecking=no -i %s' % ssh_key_path
 
 class UpdatePrometheus:
     def __init__(self):
-        logger.info("_init_ function")
-        logger.info(
+        logger.error("_init_ function")
+        logger.error(
             'clone repos url %s in repo %s, triggered from changes on branch %s',
             prometheus_repo_url,
             prometheus_repo_path,
@@ -47,7 +47,7 @@ class UpdatePrometheus:
     def main(self):
         for env in env_list:
             if not (os.path.exists(os.path.join(prometheus_rules_nfs_path, env)) or (os.path.exists(os.path.join(prometheus_static_files_nfs_path, env)))):
-                logger.info('break for env %s',env)
+                logger.error('break for env %s',env)
                 continue
 
             alertmanager_config_repo_path = os.path.join(prometheus_repo_path, 'alertmanager/config/', env, 'config.yaml')
@@ -63,43 +63,43 @@ class UpdatePrometheus:
 
     # update alertmanager config file in nfs/efs
     def update_alertmanager_config(self, alertmanager_config_nfs_path, alertmanager_config_repo_path):
-        logger.info("update_prometheus_config function")
+        logger.error("update_prometheus_config function")
         if not compare_files(alertmanager_config_repo_path, alertmanager_config_nfs_path):
-            logger.info('copy from %s to %s',alertmanager_config_repo_path, alertmanager_config_nfs_path)
+            logger.error('copy from %s to %s',alertmanager_config_repo_path, alertmanager_config_nfs_path)
             shutil.copyfile(alertmanager_config_repo_path, alertmanager_config_nfs_path)
 
 
     # update prometheus config file in nfs/efs
     def update_prometheus_config(self, prometheus_config_nfs_path, prometheus_config_repo_path):
-        logger.info("update_prometheus_config function")
+        logger.error("update_prometheus_config function")
         if not compare_files(prometheus_config_repo_path, prometheus_config_nfs_path):
-            logger.info("copy from %s to %s", prometheus_config_repo_path, prometheus_config_nfs_path)
+            logger.error("copy from %s to %s", prometheus_config_repo_path, prometheus_config_nfs_path)
             shutil.copyfile(prometheus_config_repo_path, prometheus_config_nfs_path)
 
 
     # Update prometheus rules in nfs/efs and push 
     # the changed files to their corresponding projct repo in git
     def update_prometheus_rules(self, prometheus_rules_nfs_path, prometheus_rules_repo_path, env, prometheus_config_nfs_path):
-        logger.info("update_prometheus_rules function")
+        logger.error("update_prometheus_rules function")
         
         if os.path.exists(prometheus_rules_repo_path):
             src_files = os.listdir(prometheus_rules_repo_path)
             for rule_file in src_files:
-                logger.info("rule file name: %s", rule_file)
+                logger.error("rule file name: %s", rule_file)
                 nfs_file_path = os.path.join(prometheus_rules_nfs_path, rule_file)
-                logger.info("nfs_file_path: %s", nfs_file_path)
+                logger.error("nfs_file_path: %s", nfs_file_path)
                 rule_file_path = os.path.join(prometheus_rules_repo_path, rule_file)
-                logger.info("rule_file_path: %s", rule_file_path)
+                logger.error("rule_file_path: %s", rule_file_path)
 
                 update_repo = False
                 if not os.path.exists(nfs_file_path):
-                    logger.info('copy from %s to %s', rule_file_path, nfs_file_path)
+                    logger.error('copy from %s to %s', rule_file_path, nfs_file_path)
                     shutil.copyfile(rule_file_path, nfs_file_path)
                     update_repo = True
                 else:
                     if not compare_files(nfs_file_path, rule_file_path):
-                        logger.info("updating %s content", nfs_file_path)
-                        logger.info('copy from %s to %s', rule_file_path, nfs_file_path)
+                        logger.error("updating %s content", nfs_file_path)
+                        logger.error('copy from %s to %s', rule_file_path, nfs_file_path)
                         shutil.copyfile(rule_file_path, nfs_file_path)
                         update_repo = True
 
@@ -112,51 +112,51 @@ class UpdatePrometheus:
                 ##############################################################################   
                 # if update_repo:
                 #     project_name = get_project_name_from_path(rule_file)
-                #     logger.info("project_name: %s", project_name)
+                #     logger.error("project_name: %s", project_name)
 
                 #     project_repo_url = get_project_repo(project_name)
-                #     logger.info("project_repo_url: %s", project_repo_url)
+                #     logger.error("project_repo_url: %s", project_repo_url)
                 #     if project_repo_url is not None:
                 #         project_repo_path = '/tmp/update_project_git_repo/%s' % project_name
-                #         logger.info("project_repo_path: %s", project_repo_path)
+                #         logger.error("project_repo_path: %s", project_repo_path)
                             
                 #         # Clone repo, checkout 'development' branch, override user_input.yaml
                 #         # file, commit and push to git
-                #         logger.debug("Clone project repo")
+                #         logger.error("Clone project repo")
                 #         repo_instance = clone_repo(git_ssh_cmd,project_repo_url, project_repo_path, branch)
-                #         logger.debug("Checkeout branch %s", branch)
+                #         logger.error("Checkeout branch %s", branch)
                 #         checkout_branch(git_ssh_cmd, repo_instance, branch)
                 #         config_path = os.path.join(repo_instance,'user_input.yaml')
                 #         modify_config(rule_file_path, env, config_path)
-                #         logger.debug("Commit changes of %s for rule %s in environment %s", config_path, rule_file_path, env)
+                #         logger.error("Commit changes of %s for rule %s in environment %s", config_path, rule_file_path, env)
                 #         commit_changes(git_ssh_cmd, repo_instance, branch, project_name)
-                #         logger.debug("Push changes")
+                #         logger.error("Push changes")
                 #         push_changes(git_ssh_cmd, repo_instance, branch)
 
 
     # Update prometheus static files in nfs/efs and push 
     # the changed files to their corresponding projct repo in git
     def update_prometheus_static_files(self, prometheus_static_files_nfs_path, prometheus_static_files_repo_path, env):
-        logger.info("update_prometheus_static_files function")
+        logger.error("update_prometheus_static_files function")
         
         if os.path.exists(prometheus_static_files_repo_path):
             src_files = os.listdir(prometheus_static_files_repo_path)
             for static_file in src_files:
-                logger.info("rule file name: %s", static_file)
+                logger.error("rule file name: %s", static_file)
                 nfs_file_path = os.path.join(prometheus_static_files_nfs_path, static_file)
-                logger.info("nfs_file_path: %s", nfs_file_path)
+                logger.error("nfs_file_path: %s", nfs_file_path)
                 static_file_path = os.path.join(prometheus_static_files_repo_path, static_file)
-                logger.info("static_file_path: %s", static_file_path)
+                logger.error("static_file_path: %s", static_file_path)
 
                 update_repo = False
                 if not os.path.exists(nfs_file_path):
-                    logger.info('copy from %s to %s', static_file_path, nfs_file_path)
+                    logger.error('copy from %s to %s', static_file_path, nfs_file_path)
                     shutil.copyfile(static_file_path, nfs_file_path)
                     update_repo = True
                 else:
                     if not compare_files(nfs_file_path, static_file_path):
-                        logger.info("updating %s content", nfs_file_path)
-                        logger.info('copy from %s to %s', static_file_path, nfs_file_path)
+                        logger.error("updating %s content", nfs_file_path)
+                        logger.error('copy from %s to %s', static_file_path, nfs_file_path)
                         shutil.copyfile(static_file_path, nfs_file_path)
                         update_repo = True
 
@@ -165,25 +165,25 @@ class UpdatePrometheus:
                 ##############################################################################   
                 # if update_repo:
                 #     project_name = get_project_name_from_path(static_file)
-                #     logger.info("project_name: %s", project_name)
+                #     logger.error("project_name: %s", project_name)
 
                 #     project_repo_url = get_project_repo(project_name)
-                #     logger.info("project_repo_url: %s", project_repo_url)
+                #     logger.error("project_repo_url: %s", project_repo_url)
                 #     if project_repo_url is not None:
                 #         project_repo_path = '/tmp/update_project_git_repo/%s' % project_name
-                #         logger.info("project_repo_path: %s", project_repo_path)
+                #         logger.error("project_repo_path: %s", project_repo_path)
                             
                 #         # Clone repo, checkout 'development' branch, override user_input.yaml
                 #         # file, commit and push to git
-                #         logger.debug("Clone project repo")
+                #         logger.error("Clone project repo")
                 #         repo_instance = clone_repo(git_ssh_cmd,project_repo_url, project_repo_path, branch)
-                #         logger.debug("Checkeout branch %s", branch)
+                #         logger.error("Checkeout branch %s", branch)
                 #         checkout_branch(git_ssh_cmd, repo_instance, branch)
                 #         config_path = os.path.join(repo_instance,'user_input.yaml')
                 #         modify_config(static_file_path, env, config_path)
-                #         logger.debug("Commit changes of %s for rule %s in environment %s", config_path, static_file_path, env)
+                #         logger.error("Commit changes of %s for rule %s in environment %s", config_path, static_file_path, env)
                 #         commit_changes(git_ssh_cmd, repo_instance, branch, project_name)
-                #         logger.debug("Push changes")
+                #         logger.error("Push changes")
                 #         push_changes(git_ssh_cmd, repo_instance, branch)
 
 

@@ -32,7 +32,9 @@ class ParseInputs:
     #
     # -------------------------------------------------------------------------
     def parse_user_config_yaml(self, requirements_yaml, config_yaml, user_input_env):
-        logger.info("=" * 75)
+        logger.error("-" * 75)
+        logger.error("inside parser input")
+        logger.error("-" * 75)
         # parse requirements file
         with open(requirements_yaml, 'r') as stream:
             out = yaml.load(stream, Loader=yaml.Loader)
@@ -54,11 +56,10 @@ class ParseInputs:
             self.pagerduty_service_key_id = out['monitoring']['notification']['pagerduty']['service_key'][0]
             self.namespace = out['monitoring']['namespace'][0]
             self.slack_channel.append(out['monitoring']['notification']['slack']['channel'])
-
         # parse config file
         with open(config_yaml, 'r') as stream_config:
-            logger.info("=" * 75)
             out_config = yaml.load(stream_config, Loader=yaml.Loader)
+            print("out_config: ", out_config)
             self.alertmanager_config_file_path = out_config['prometheus']['alertmanager']['config']['file_path'][0]
             self.alertmanager_config_nfs_path = out_config['prometheus']['alertmanager']['config']['nfs_path'][0]
             self.monitoring_config_file_path = out_config['prometheus']['monitoring']['config']['file_path'][0]

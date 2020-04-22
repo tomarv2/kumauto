@@ -64,7 +64,7 @@ def parse_query(input_query):
     new_query = input_query.replace("\\", "\\\\")
     new_query = new_query.replace('\"', "\\\"")
     new_query = '\"' + new_query + '\"'
-    #logger.debug("new query %s", new_query)
+    #logger.error("new query %s", new_query)
     return new_query
 
 
@@ -139,7 +139,7 @@ def get_list_env(env):
 def get_topic(kafka_image, zk_server_name):
     get_topics = []
     list_cmd = f'/bin/kafka-topics.sh --zookeeper {zk_server_name} --list'
-    #logger.debug("get topics cmd: %s", list_cmd)
+    #logger.error("get topics cmd: %s", list_cmd)
     get_topics.append(client.containers.run(f'{kafka_image}', list_cmd))
     return get_topics
 
@@ -147,30 +147,30 @@ def get_topic(kafka_image, zk_server_name):
 def describe_topic(kafka_image, zk_server_name, topic_name):
     try:
         describe_cmd = f'/bin/kafka-topics.sh --describe --zookeeper {zk_server_name} --topic {topic_name}'
-        #logger.debug("describe topics cmd: %s", describe_cmd)
+        #logger.error("describe topics cmd: %s", describe_cmd)
         return (client.containers.run(f'{kafka_image}', describe_cmd))
     except:
-        #logger.info(f'unable to describe topic: {topic_name} in zookeeper: {zk_server_name}')
+        #logger.error(f'unable to describe topic: {topic_name} in zookeeper: {zk_server_name}')
         pass
 
 
 def update_topic_retention(kafka_image, zk_server_name, topic_name):
     try:
         update_retention_cmd = f'/bin/kafka-topics.sh --zookeeper {zk_server_name} --alter --topic {topic_name} --config retention.ms=1'
-        #logger.debug("update retention cmd: %s", update_retention_cmd)
+        #logger.error("update retention cmd: %s", update_retention_cmd)
         client.containers.run(f'{kafka_image}', update_retention_cmd)
     except:
-        #logger.info('topic: {topic_name} does not exists in zookeeper: {zk_server_name}')
+        #logger.error('topic: {topic_name} does not exists in zookeeper: {zk_server_name}')
         pass
 
 
 def delete_topic(kafka_image, zk_server_name, topic_name):
     try:
         delete_topic_cmd = f'/bin/kafka-topics.sh --zookeeper {zk_server_name} --delete --topic {topic_name}'
-        #logger.debug("delete topics cmd: %s", delete_topic_cmd)
+        #logger.error("delete topics cmd: %s", delete_topic_cmd)
         client.containers.run(f'{kafka_image}', delete_topic_cmd)
     except:
-        #logger.info(f'unable to delete topic: {topic_name} from zookeeper: {zk_server_name}')
+        #logger.error(f'unable to delete topic: {topic_name} from zookeeper: {zk_server_name}')
         pass
 
 
@@ -178,20 +178,20 @@ def get_zk(zk_server_name, node, topic_name):
     zk = KazooClient(hosts=zk_server_name)
     zk.start()
     topic_path = os.path.join('/', node, 'brokers/topics', topic_name)
-    #logger.info('topic_path: ', topic_path)
+    #logger.error('topic_path: ', topic_path)
     try:
         if zk.exists(topic_path):
-            #logger.info(f'topic exists: {topic_name} in zookeeper: {zk_server_name}')
+            #logger.error(f'topic exists: {topic_name} in zookeeper: {zk_server_name}')
             try:
                 zk.delete(topic_path, recursive=True)
                 zk.stop()
                 return 0
             except:
-                #logger.info('unable to delete topic')
+                #logger.error('unable to delete topic')
                 zk.stop()
                 raise SystemExit
         else:
-            #logger.info(f'topic: {topic_name} does not exists')
+            #logger.error(f'topic: {topic_name} does not exists')
             pass
     except:
         pass
@@ -215,7 +215,7 @@ def cleanup(prometheus_rules_dir, prometheus_static_file_dir, prometheus_config_
             try:
                 os.remove(os.path.join(prometheus_rules_dir, rule_file))
             except BaseException:
-                # logger.error("prometheus: unable to delete file: %s", os.path.join(prometheus_rules_dir, rule_file))
+                # logger.error("[prometheus] unable to delete file: %s", os.path.join(prometheus_rules_dir, rule_file))
                 pass
 
     static_files = os.listdir(prometheus_static_file_dir)
@@ -224,28 +224,28 @@ def cleanup(prometheus_rules_dir, prometheus_static_file_dir, prometheus_config_
             try:
                 os.remove(os.path.join(prometheus_static_file_dir, static_file))
             except BaseException:
-                # logger.error("prometheus: unable to delete file: %s", os.path.join(prometheus_static_file_dir, static_file))
+                # logger.error("[prometheus] unable to delete file: %s", os.path.join(prometheus_static_file_dir, static_file))
                 pass
 
     if os.path.exists(prometheus_config_file_path + "-updated.yaml"):
         try:
             os.remove(prometheus_config_file_path + "-updated.yaml")
         except BaseException:
-            # logger.error("prometheus: unable to delete file: %s", prometheus_config_file_path + "-updated.yaml")
+            # logger.error("[prometheus] unable to delete file: %s", prometheus_config_file_path + "-updated.yaml")
             pass
 
     if os.path.exists(alertmanager_config_file_path + "-updated.yaml"):
         try:
             os.remove(alertmanager_config_file_path + "-updated.yaml")
         except BaseException:
-            # logger.error("prometheus: unable to delete file: %s", alertmanager_config_file_path + "-updated.yaml")
+            # logger.error("[prometheus] unable to delete file: %s", alertmanager_config_file_path + "-updated.yaml")
             pass
 
 
 # compare the content of two files, if mismatches, return false
 def compare_files(file1, file2):
-    # logger.debug('comparing files: %s %s' % (file1, file2))
-    # logger.debug('comparing files...')
+    # logger.error('comparing files: %s %s' % (file1, file2))
+    # logger.error('comparing files...')
     file1_md5 = hashlib.md5(open(file1, 'rb').read()).hexdigest()
     file2_md5 = hashlib.md5(open(file2, 'rb').read()).hexdigest()
     if file1_md5 == file2_md5:
@@ -256,13 +256,13 @@ def compare_files(file1, file2):
 
 # TO DO: return the repo url of the specified project
 def get_project_repo(project_name):
-    # logger.debug('navigate git repos to extract the project repo path')
+    # logger.error('navigate git repos to extract the project repo path')
     return None
 
 
 # return the name of the project
 def get_project_name_from_path(file_name):
-    # logger.debug('parse file name to extract project name')
+    # logger.error('parse file name to extract project name')
     # TO DO: manage the case where words like spark, transform, nifi, are added
     return os.path.splitext(file_name)[0]
 
@@ -270,7 +270,7 @@ def get_project_name_from_path(file_name):
 # TO DO: update the config_path (path of user_input.yaml) by adding the rule
 # rule_file_path for the environment  env
 def modify_config(rule_file_path, env, config_path):
-    # logger.debug('locate the elastalert queries in the user_input.yaml file in the corresponding project and change them')
+    # logger.error('locate the elastalert queries in the user_input.yaml file in the corresponding project and change them')
     print('locate the elastalert queries in the user_input.yaml file in the corresponding project and change them')
 
 

@@ -65,8 +65,8 @@ def get_value(file_to_update, end_point):
 
 
 to_email_list = 'demo1@demo.com,demo2@demo.com'
-logger.info("fileloc: %s", fileloc)
-logger.info("project name: %s", prj_name)
-logger.info("to_email_list: %s", to_email_list)
+logger.error("fileloc: %s", fileloc)
+logger.error("project name: %s", prj_name)
+logger.error("to_email_list: %s", to_email_list)
 tag = "# DO NOT REMOVE TAG:" + prj_name
 final_to_email_list = to_email_list + ' ' + tag
