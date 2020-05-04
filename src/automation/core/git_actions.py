@@ -1,7 +1,7 @@
 import os
 from git import Repo, Git
 import hashlib
-from core.logging_function import logger
+# from core.logging_function import logger
 
 
 def update_repo(git_ssh_cmd, repo_path, branch):

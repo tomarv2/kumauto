@@ -3,10 +3,11 @@ import os
 import ruamel.yaml as yaml
 from subprocess import call
 from pykwalify.core import Core
-from core.logging_function import logger
-from core.base_function import validate_yaml
+import logging
 
-config_yaml = '/Users/varun.tomar/Documents/personal_github/automation/src/config.yaml'
+from automation.core.base_function import validate_yaml
+logger = logging.getLogger(__name__)
+config_yaml = '/Users/varun.tomar/Documents/personal_github/mauto/src/config.yaml'
 
 
 def validate_prometheus_config(prometheus_config_file_path):

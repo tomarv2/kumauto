@@ -2,15 +2,15 @@ prometheus:
   alertmanager:
     config:
       file_path:
-      - /Users/varun.tomar/Documents/personal_github/automation/src/config.yaml
+      - /Users/varun.tomar/Documents/personal_github/mauto/src/config.yaml
       nfs_path:
-      - /Users/varun.tomar/Documents/personal_github/automation/src/config.yaml
+      - /Users/varun.tomar/Documents/personal_github/mauto/src/config.yaml
   monitoring:
     config:
       file_path:
-        - /Users/varun.tomar/Documents/personal_github/automation/src/config.yaml
+        - /Users/varun.tomar/Documents/personal_github/mauto/src/config.yaml
       nfs_path:
-        - /Users/varun.tomar/Documents/personal_github/automation/src/config.yaml
+        - /Users/varun.tomar/Documents/personal_github/mauto/src/config.yaml
     rules:
       dir:
         - /tmp/prometheus/monitoring/rules
@@ -22,7 +22,7 @@ prometheus:
         - /tmp/prometheus/monitoring/rules
     static_file:
       dir:
-        - /Users/varun.tomar/Documents/personal_github/automation/data/sample-files
+        - /Users/varun.tomar/Documents/personal_github/mauto/data/sample-files
       sample_file:
         - /data/sample-files/sample-staticfile.yaml
       nfs_path:

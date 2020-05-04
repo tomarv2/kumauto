@@ -1,14 +1,11 @@
-import os
-import sys
 import ruamel.yaml as yaml
-
-
+import logging
 import sys
-sys.path.append("..")
-
+# sys.path.append("..")
 #sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from core.base_function import *
-from core.logging_function import logger
+from automation.core.base_function import *
+
+logger = logging.getLogger(__name__)
 
 
 class ParseInputs:
@@ -32,9 +29,7 @@ class ParseInputs:
     #
     # -------------------------------------------------------------------------
     def parse_user_config_yaml(self, requirements_yaml, config_yaml, user_input_env):
-        logger.error("-" * 75)
-        logger.error("inside parser input")
-        logger.error("-" * 75)
+        logger.debug("inside parser input")
         # parse requirements file
         with open(requirements_yaml, 'r') as stream:
             out = yaml.load(stream, Loader=yaml.Loader)
@@ -59,7 +54,7 @@ class ParseInputs:
         # parse config file
         with open(config_yaml, 'r') as stream_config:
             out_config = yaml.load(stream_config, Loader=yaml.Loader)
-            print("out_config: ", out_config)
+            #logger.debug("out_config: ", out_config)
             self.alertmanager_config_file_path = out_config['prometheus']['alertmanager']['config']['file_path'][0]
             self.alertmanager_config_nfs_path = out_config['prometheus']['alertmanager']['config']['nfs_path'][0]
             self.monitoring_config_file_path = out_config['prometheus']['monitoring']['config']['file_path'][0]

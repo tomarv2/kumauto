@@ -1,0 +1,91 @@
+prometheus:
+  alertmanager:
+    config:
+      file_path:
+      - /Users/varun.tomar/Documents/personal_github/mauto/src/config.yaml
+      nfs_path:
+      - /Users/varun.tomar/Documents/personal_github/mauto/src/config.yaml
+  monitoring:
+    config:
+      file_path:
+        - /Users/varun.tomar/Documents/personal_github/mauto/src/config.yaml
+      nfs_path:
+        - /Users/varun.tomar/Documents/personal_github/mauto/src/config.yaml
+    rules:
+      dir:
+        - /tmp/prometheus/monitoring/rules
+      sample_file:
+        - /data/sample-files/sample-rules.yaml
+      sample_file_spark:
+        - /data/sample-files/sample-rules-spark.yaml
+      nfs_path:
+        - /tmp/prometheus/monitoring/rules
+    static_file:
+      dir:
+        - /Users/varun.tomar/Documents/personal_github/mauto/data/sample-files
+      sample_file:
+        - /data/sample-files/sample-staticfile.yaml
+      nfs_path:
+        - /tmp/prometheus/monitoring/static_files
+    repo:
+      path:
+        - /tmp/update_github_prometheus/prometheus
+      url:
+        - ssh://git@git.demo.com:7999/dp/prometheus.git
+elastalert:
+  rules:
+    dir:
+    - /tmp/monitoring/elastalert/rules
+    nfs_path:
+    - /tmp/monitoring/elastalert/rules
+    sample_file:
+    - /data/sample-files/sample-elastalert-rules.yaml
+  config:
+    file_path:
+      - /tmp/monitoring/elastalert/config.yaml 
+    nfs_path:
+      - /tmp/monitoring/elastalert
+  repo_url:
+    - ssh://git@git.demo.com:7999/dp/elastalert.git
+  repo_path:
+    - /tmp/update_git_elastalert/elastalert
+  rules_repo_name:
+    - 'rules'
+  EA_rules_schema:
+    - /data/sample-files/EA-rules-schema.yaml
+  temporary_ea_rules:
+    - /tmp/temporary_ea_rules/
+elasticsearch:
+  hostname:
+    aws: elasticsearch.default
+  port: 9200
+branch:
+  - development
+pagerduty_client_name:
+  - elastalert
+slack:
+  channel:
+    - test
+index:
+  nifi:
+    - nifi-logs-*
+  spark:
+    - spark-logs-*
+  service:
+    - dw-access-logs-*
+ssh_key_path:
+  - /tmp/secret/id_rsa
+env:
+  - aws-stg
+  - aws
+log:
+ filename:
+   - /tmp/logs/automation.log
+ level:
+   - debug
+kafka_docker_image: mesosphere/kafka-client
+zookeeper_exclude_list:
+  - zk.demo.com
+  - zk01.demo.com
+  - zk02.demo.com
+  - zk03.demo.com

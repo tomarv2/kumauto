@@ -2,7 +2,8 @@ import sys
 import os
 import yaml
 import sys
-sys.path.append("..")
+#sys.path.append("..")
+import logging
 
 #sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from yaml.scanner import ScannerError
@@ -10,22 +11,30 @@ from .parse_inputs import ParseInputs
 from .setup_prometheus import build_prometheus, update_prometheus
 from .setup_alertmanager import build_alertmanager, update_alertmanager
 from .setup_elastalert import build_elastalert, update_elastalert
-
-from core.base_function import *
+from .logging import configure_logging
+from automation.core.base_function import *
 from .validation import *
-from core.logging_function import logger
 
-config_yaml = '/Users/varun.tomar/Documents/personal_github/automation/src/config.yaml'  # todo: better arrangement here
-requirements_yaml = '/Users/varun.tomar/Documents/personal_github/automation/src/user_input.yaml'
-#logger.configure(requirements_yaml)
 
+logger = logging.getLogger(__name__)
+
+config_yaml = '/Users/varun.tomar/Documents/personal_github/mauto/src/automation/config.yaml'  # todo: better arrangement here
+requirements_yaml = '/Users/varun.tomar/Documents/personal_github/mauto/src/automation/user_input.yaml'
+
+
+def dispatch_cli():
+    """Command-line interface to Dispatch."""
+    configure_logging()
+
+
+dispatch_cli()
 
 user_input_env = 'aws'
 
 
 def entrypoint():
     user_input_env_lower = user_input_env.lower()
-    logger.error("Checking the format of yaml file")
+    logger.debug("Checking the format of yaml file")
     parser = ParseInputs()
     parser.parse_user_config_yaml(requirements_yaml, config_yaml, user_input_env_lower)
     os.environ["TEST_ALERTMANAGER"] = "1"
@@ -44,15 +53,9 @@ def entrypoint():
         # Build the new files
         #
         # ----------------------------------------------------
-        print("-" * 75)
-        print("user_input_env_lower: ", user_input_env_lower)
-        print("parser.project_name: ", parser.project_name)
-        print("parser.alertmanager_config_file_path: ", parser.alertmanager_config_file_path)
-        print("parser.modules: ", parser.modules)
-        print("parser.tools: ", parser.tools)
-        print("parser.email_to: ", parser.email_to)
-        print("parser.slack_channel: ", parser.slack_channel)
-        print("parser.pagerduty_service_key_id: ", parser.pagerduty_service_key_id)
+        logger.debug("user_input_env_lower: {}" .format(user_input_env_lower))
+        logger.debug("parser.project_name:{}" .format(parser.project_name))
+        logger.debug("parser.alertmanager_config_file_path: {}" .format(parser.alertmanager_config_file_path))
         build_alertmanager(user_input_env_lower, parser.project_name, parser.alertmanager_config_file_path,
                            parser.modules, parser.tools, parser.email_to, parser.slack_channel, parser.pagerduty_service_key_id)
         os.environ["TEST_ALERTMANAGER"] = "0"
@@ -76,29 +79,29 @@ def entrypoint():
     #
     # -------------------------------------------------------------------------
     if os.environ["TEST_ALERTMANAGER"] == "0":
-        logger.error("TESTING ALERTMANAGER...")
+        logger.debug("TESTING ALERTMANAGER...")
         if validate_alartmanager_config(parser.alertmanager_config_file_path):
             os.environ["TEST_ALERTMANAGER"] = "0"
         else:
             os.environ["TEST_ALERTMANAGER"] = "1"
-            logger.error("ALERTMANAGER validation didn't pass...")
+            logger.debug("ALERTMANAGER validation didn't pass...")
 
     if os.environ["TEST_PROMETHEUS"] == "0":
-        logger.error("TESTING PROMETHEUS...")
+        logger.debug("TESTING PROMETHEUS...")
         if validate_prometheus_config(parser.monitoring_config_file_path) and validate_prometheus_rules\
              (parser.monitoring_rules_dir) and validate_prometheus_static_files(parser.monitoring_static_file_dir):
             os.environ["TEST_PROMETHEUS"] = "0"
         else:
             os.environ["TEST_PROMETHEUS"] = "1"
-            logger.error("PROMETHEUS validation didn't pass...")
+            logger.debug("PROMETHEUS validation didn't pass...")
 
     if os.environ["TEST_ELASTALERT"] == "0":
-        logger.error("TESTING ELASTALERT...")
+        logger.debug("TESTING ELASTALERT...")
         if validate_elastalert_rules(parser.temporary_ea_rules, user_input_env_lower):
             os.environ["TEST_ELASTALERT"] = "0"
         else:
             os.environ["TEST_ELASTALERT"] = "1"
-            logger.error("ELASTALERT validation didn't pass...")
+            logger.debug("ELASTALERT validation didn't pass...")
 
     # -------------------------------------------------------------------------
     #

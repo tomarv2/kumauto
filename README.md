@@ -1,4 +1,26 @@
-**How to use this project**
+# Monitoring Automation project
+
+One of the main problem that we face with microservices deployment is how to add monitoring.
+With deployment being so dynamic its hard to track what to monitor and adjust to changes.
+
+In this project we are trying to offload the management of monitoring. When a new project is to added, 
+user just needs to update the `user_input.yaml` and it will be picked up by CICD (in our case Jenkins).
+
+If a project needs to add a pagerduty information or update the contact person for a project, 
+they can ust update the user information and it be taken car of by CICD.
+
+Where we can add Project to:
+
+- Prometheus
+- Blackbox
+- Elastalert
+- Pushgateway
+- Pagerduty
+- Email
+- Slack
+
+
+**How to use this:**
 
 Pre-reqs:
 
@@ -7,44 +29,9 @@ Pre-reqs:
  - Running Prometheus Monitoring
  - Running Pushgateway
  - Pagerduty account
+ - Slack account
  - Kafka/Zookeper (when we wrote this project, we had a requirement to cleanup Kafka/Zookeeper)
-
-Based on **user_input.yaml** (specified by user), this package will:
-
-    - Update Elastalert
-    - Update Alertmanager
-    - Update Prometheus Monitoring
-    - Update pushgateway
-    - cleanup kafka/zk topics (DEV/QA only)
     
-
-**Done:**
-
-    - Prometheus: alertmanager/monitoring
-    - Elastalert
-    - Update multiple queries in elastalert
-    - Update email/pagerduty
-    - Allow user to change email and pagerduty ID
-    - Part of deployment, push files to git repo - user side
-    - Send logs to persitent storage
-    - Part of deployment, push files to git repo - application side
-    
-**In progress:**
-
-    - Setup up log rotation
-    - Test cases
-    - File locking
-    - Enable checksum
-    - Rearrange code
-
-**How to use:**
-    
-Use **user_input.yaml** and **monitoring_change_on_user_repo_deploy.yaml** in this repo as the base files. 
-
-- Update the env (available options: AWS-STG, AWS).
-- Update the path to user_input.yaml in user repo.
-- Copy monitoring_change_on_user_repo_deploy.yaml to your respective deployment directory.
-
 **Note:**
   
   - Docker image should have ssh keys to connect to git.

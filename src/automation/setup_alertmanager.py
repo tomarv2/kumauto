@@ -4,14 +4,14 @@ import sys
 import fileinput
 import re
 import ruamel.yaml as yaml
-import shutil
+import logging
 
 import sys
 sys.path.append("..")
 
 
-from core.logging_function import logger
-from core.base_function import *
+logger = logging.getLogger(__name__)
+from automation.core.base_function import *
 from .git_push_prometheus import update_github_alertmanager
 
 
@@ -28,16 +28,6 @@ def build_alertmanager(user_input_env, project_name, alertmanager_config_file_pa
     try:
         if alertmanager_validate_current_setup(alertmanager_fileloc, project_name, user_input_env) == 0:
             logger.error('[alertmanager] configuring monitoring for: {}' .format(project_name))
-            print('-' * 75)
-            print("alertmanager file location: ", alertmanager_fileloc)
-            print("project name: ", project_name)
-            print("modules to configure: ", convert_list_to_str(modules))
-            print("environment to configure: ", user_input_env)
-            print("tools to configure: ", convert_list_to_str(tools))
-            print("email address to add: ", convert_list_to_str(email_to))
-            print("slack channel to add: ", convert_list_to_slack_channel(slack_channel))
-            print("pagerduty service key_id: ", pagerduty_service_key_id)
-            print('-' * 75)
             alertmanager_create_new_entry(alertmanager_fileloc, project_name, convert_list_to_str(modules), user_input_env,
                             convert_list_to_str(tools), convert_list_to_str(email_to), convert_list_to_slack_channel(slack_channel), pagerduty_service_key_id)
         else:
@@ -54,13 +44,11 @@ def build_alertmanager(user_input_env, project_name, alertmanager_config_file_pa
 #
 # -------------------------------------------------------------
 def alertmanager_validate_current_setup(basefile_list, project_name, env):
-    logger.error("-" * 75)
-    logger.error("[alertmanager] validating if alert already exists for {} in config: {}" .format(project_name, basefile_list))
+    logger.debug("[alertmanager] validating if alert already exists for {} in config: {}" .format(project_name, basefile_list))
     try:
         with open(basefile_list, 'r') as stream:
             out = yaml.load(stream, Loader=yaml.Loader)
             print(out['route'])
-            logger.error("-" * 75)
             try:
                 logger.error("[alertmanager] getting list of currently monitored projects...")
                 current_values_in_alertmanager.append(out['route']['routes'])
@@ -97,13 +85,12 @@ def alertmanager_validate_current_setup(basefile_list, project_name, env):
 # -------------------------------------------------------------
 def alertmanager_create_new_entry(alertmanager_file, prj_name, modules, env, tools, to_email_list, slack_channel, pagerduty_service_key_id):
     print("inside alertmanager_create_new_entry")
-    logger.error("-" * 75)
     if 'alertmanager' in tools:
-        logger.error("[alertmanager] to_email_list: {}" .format(to_email_list))
-        logger.error("[alertmanager] taking backup of file...")
-        logger.error("[alertmanager] file name: {}" .format(alertmanager_file))
+        logger.debug("[alertmanager] to_email_list: {}" .format(to_email_list))
+        logger.debug("[alertmanager] taking backup of file...")
+        logger.debug("[alertmanager] file name: {}" .format(alertmanager_file))
         copyfile(alertmanager_file, alertmanager_file + '.bak')
-        logger.error("[alertmanager] updating alert rules section...")
+        logger.debug("[alertmanager] updating alert rules section...")
         if 'qa' in env:
             nonprod_alertmanager(alertmanager_file, prj_name, modules, env, to_email_list, slack_channel)
         else:
@@ -213,23 +200,22 @@ def prod_alertmanager(alertmanager_file, prj_name, modules, env, to_email_list, 
 #
 # -------------------------------------------------------------
 def alertmanager_replace_existing_entry(alertmanager_file, prj_name, tools, to_email_list, env, slack_channel, pagerduty_service_key_id):
-    logger.error("-" * 75)
-    logger.error("[alertmanager] file location: %s", alertmanager_file)
-    logger.error("[alertmanager] project name: %s", prj_name)
-    logger.error("[alertmanager] to_email_list: %s", to_email_list)
-    logger.error("[alertmanager] env: %s", env)
+    logger.debug("[alertmanager] file location: %s", alertmanager_file)
+    logger.debug("[alertmanager] project name: %s", prj_name)
+    logger.debug("[alertmanager] to_email_list: %s", to_email_list)
+    logger.debug("[alertmanager] env: %s", env)
     tag = "# DO NOT REMOVE TAG: " + prj_name + '-' + 'team'
     final_to_email_list = to_email_list + ' ' + tag
-    logger.error("[alertmanager] new email_to entries: %s", final_to_email_list)
+    logger.debug("[alertmanager] new email_to entries: %s", final_to_email_list)
     try:
-        logger.error("[alertmanager] backing up alertmanager.yaml file: %s", alertmanager_file)
+        logger.debug("[alertmanager] backing up alertmanager.yaml file: %s", alertmanager_file)
         copyfile(alertmanager_file, alertmanager_file + '.bak')
     except BaseException:
         logger.error("[alertmanager] unable to backup file..")
         pass
     to_email_list_new = "'" + to_email_list + "'"
-    logger.error("tag: %s", tag)
-    logger.error("final_line: %s", final_to_email_list)
+    logger.debug("tag: %s", tag)
+    logger.debug("final_line: %s", final_to_email_list)
     if 'alertmanager' in tools:
         logger.error("[alertmanager] trying to update alertmanager config.yaml file..")
         copyfile(alertmanager_file, alertmanager_file + "-updated.yaml")
@@ -268,7 +254,6 @@ def alertmanager_replace_existing_entry(alertmanager_file, prj_name, tools, to_e
 #
 # -------------------------------------------------------------
 def update_alertmanager(env, project_name, alertmanager_config_file_path):
-    logger.error("-" * 75)
     try:
         logger.error("[alertmanager] updating repo...")
         update_alertmanager_config(alertmanager_config_file_path)

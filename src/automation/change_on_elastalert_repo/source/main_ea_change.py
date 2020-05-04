@@ -7,7 +7,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 from core.git_actions import *
 from core.base_function import *
 from core.logging_function import logger
-logger.configure(None)
+# logger.configure(None)
 
 config_yaml = '/automation/config.yaml'
 
