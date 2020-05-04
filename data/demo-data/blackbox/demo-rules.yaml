@@ -1,0 +1,24 @@
+groups:
+- name: demo.blackbox.rules
+  rules:
+  # Alert for any instance that is unreachable for >5 minutes.
+  - alert: aws-demo-EndPointFailure
+    expr: probe_http_status_code{job="demo-blackbox"} != 200 and probe_http_status_code{job="demo-blackbox"} != 0
+    for: 1m
+    labels:
+      service: demo-blackbox
+    annotations:
+      summary: "Instance {{ $labels.instance }} is down"
+      description: "{{ $labels.instance }} of job {{ $labels.job }} is down."
+
+- name: demo.rules
+  rules:
+  - alert: aws-demo-PodRestarting
+    expr: rate(kube_pod_container_status_restarts_total{pod=~"^POD_NAME.*$", namespace!~"stg.*"}[60m]) > 0
+    for: 1m
+    labels:
+      service: demo-blackbox
+      severity: warning
+    annotations:
+      description: Pod {{ $labels.namespace }}/{{ $labels.pod }} is down.
+      summary: Pod {{ $labels.namespace }}/{{ $labels.pod }} is down.

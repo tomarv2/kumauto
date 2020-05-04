@@ -1,0 +1,68 @@
+# Schema for Elastalert rules
+type: map
+mapping:
+  es_host:
+    type: str
+    required: True
+    enum: ['es.demo.com', 'es.onpremtest.demo.com', 'elasticsearch.default']
+  es_port: 
+    type: int
+    required: True
+    enum: [9200]
+  name: 
+    type: str
+    required: True
+    # pattern: "aws|aws-stg.*"
+  type: 
+    type: str
+    required: True
+  index: 
+    type: str
+    required: True 
+  num_events:
+    type: int
+    required: True
+  timeframe:
+    required: False
+    type: map
+    mapping:
+      minutes:
+        type: int
+  filter:
+    type: seq
+    required: True
+    sequence:
+     - type: map
+       mapping:
+        query:
+          type: map
+          required: True
+          mapping:
+            query_string:
+              type: map
+              required: True
+              mapping:
+                query:
+                  type: str
+                  required: True
+  alert:
+    type: seq
+    required: True
+    sequence:
+     - type: str
+       required: True
+       enum: ["email","pagerduty"]
+  alert_subject: 
+    type: str
+    required: True
+  pagerduty_service_key:
+    type: str
+    required: False
+  pagerduty_client_name: 
+    type: str
+    required: False
+  email:
+    type: seq
+    required: False
+    sequence:
+     - type: str

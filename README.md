@@ -41,7 +41,7 @@ Based on **user_input.yaml** (specified by user), this package will:
     
 Use **user_input.yaml** and **monitoring_change_on_user_repo_deploy.yaml** in this repo as the base files. 
 
-- Update the env (available options: WS-STG, AWS).
+- Update the env (available options: AWS-STG, AWS).
 - Update the path to user_input.yaml in user repo.
 - Copy monitoring_change_on_user_repo_deploy.yaml to your respective deployment directory.
 

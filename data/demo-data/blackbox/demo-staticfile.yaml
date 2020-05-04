@@ -1,0 +1,4 @@
+- labels:
+    job: demo-blackbox
+  targets:
+  - http://demo.com
