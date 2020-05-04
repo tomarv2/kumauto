@@ -1,12 +1,13 @@
 import os
 import docker
 import hashlib, time
-from yaml.scanner import ScannerError
+import logging
 from staticconf.loader import yaml_loader
 from kazoo.client import KazooClient
-#from core.logging_function import logger
 client = docker.from_env()
 import ruamel.yaml as yaml
+
+logger = logging.getLogger(__name__)
 
 
 def get_application_type(project_name):
@@ -20,7 +21,7 @@ def get_application_type(project_name):
 
 def get_sample_file(config_yaml, env, application_type):
     with open(config_yaml, 'r') as stream_config:
-        out_config = yaml.load(stream_config)
+        out_config = yaml.load(stream_config, Loader=yaml.Loader)
         if 'qa' in env:
             if application_type in ['transform', 'spark']:
                 return out_config['prometheus']['monitoring']['rules']['qa_sample_file_spark'][0]
@@ -271,7 +272,7 @@ def get_project_name_from_path(file_name):
 # rule_file_path for the environment  env
 def modify_config(rule_file_path, env, config_path):
     # logger.error('locate the elastalert queries in the user_input.yaml file in the corresponding project and change them')
-    print('locate the elastalert queries in the user_input.yaml file in the corresponding project and change them')
+    print("locate the elastalert queries in the user_input.yaml file in the corresponding project and change them")
 
 
 # ensure the path for the added rule exists in prometheus config file
@@ -281,7 +282,7 @@ def rule_path_exists(rule_file_path, prometheus_config_path):
         with open(prometheus_config_path, "r") as asmr:
             for line in asmr.readlines():
                 if "PROMETHEUS RULES FILE LOCATION PATH ABOVE" in line:
-                    rule_route += "  - \'%s\'\n"  % rule_file_path
+                    rule_route += "  - \'%s\'\n" % rule_file_path
                 rule_route += line
         with open(prometheus_config_path + "-copy.yaml", "w") as asmw:
             asmw.writelines(rule_route)

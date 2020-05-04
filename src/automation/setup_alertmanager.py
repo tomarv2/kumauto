@@ -5,15 +5,10 @@ import fileinput
 import re
 import ruamel.yaml as yaml
 import logging
-
-import sys
-sys.path.append("..")
-
-
-logger = logging.getLogger(__name__)
-from automation.core.base_function import *
+from automation.base.base_function import *
 from .git_push_prometheus import update_github_alertmanager
 
+logger = logging.getLogger(__name__)
 
 current_values_in_alertmanager = []
 
@@ -23,19 +18,36 @@ current_values_in_alertmanager = []
 # BUILD THE FILES OF ALERTMANAGER
 #
 # -------------------------------------------------------------
-def build_alertmanager(user_input_env, project_name, alertmanager_config_file_path, modules, tools,
-                       email_to, slack_channel, pagerduty_service_key_id):
+def build_alertmanager(user_input_env,
+                       project_name,
+                       alertmanager_config_file_path,
+                       modules,
+                       tools,
+                       email_to,
+                       slack_channel,
+                       pagerduty_service_key_id):
     logger.debug("inside build_alertmanager function")
     alertmanager_fileloc = alertmanager_config_file_path
     try:
         if alertmanager_validate_current_setup(alertmanager_fileloc, project_name, user_input_env) == 0:
             logger.info('[alertmanager] configuring monitoring for: {}' .format(project_name))
-            alertmanager_create_new_entry(alertmanager_fileloc, project_name, convert_list_to_str(modules), user_input_env,
-                            convert_list_to_str(tools), convert_list_to_str(email_to), convert_list_to_slack_channel(slack_channel), pagerduty_service_key_id)
+            alertmanager_create_new_entry(alertmanager_fileloc,
+                                          project_name,
+                                          convert_list_to_str(modules),
+                                          user_input_env,
+                                          convert_list_to_str(tools),
+                                          convert_list_to_str(email_to),
+                                          convert_list_to_slack_channel(slack_channel),
+                                          pagerduty_service_key_id)
         else:
             logger.info("[alertmanager] config already exists. Updating contact information: %s", user_input_env)
-            alertmanager_replace_existing_entry(alertmanager_fileloc, project_name, convert_list_to_str(tools),
-                                                convert_list_to_str(email_to), user_input_env, slack_channel, pagerduty_service_key_id)
+            alertmanager_replace_existing_entry(alertmanager_fileloc,
+                                                project_name,
+                                                convert_list_to_str(tools),
+                                                convert_list_to_str(email_to),
+                                                user_input_env,
+                                                slack_channel,
+                                                pagerduty_service_key_id)
     except:
         logger.error("[alertmanager] unable to update/create config")
 
@@ -86,7 +98,14 @@ def alertmanager_validate_current_setup(basefile_list, project_name, env):
 # ADD THE NEW PROJECT IN ALERTMANAGER CONFIG FILE
 #
 # -------------------------------------------------------------
-def alertmanager_create_new_entry(alertmanager_file, prj_name, modules, env, tools, to_email_list, slack_channel, pagerduty_service_key_id):
+def alertmanager_create_new_entry(alertmanager_file,
+                                  prj_name,
+                                  modules,
+                                  env,
+                                  tools,
+                                  to_email_list,
+                                  slack_channel,
+                                  pagerduty_service_key_id):
     logger.debug("inside alertmanager_create_new_entry")
     if 'alertmanager' in tools:
         logger.debug("[alertmanager] to_email_list: {}" .format(to_email_list))
@@ -95,12 +114,28 @@ def alertmanager_create_new_entry(alertmanager_file, prj_name, modules, env, too
         copyfile(alertmanager_file, alertmanager_file + '.bak')
         logger.debug("[alertmanager] updating alert rules section...")
         if 'qa' in env:
-            nonprod_alertmanager(alertmanager_file, prj_name, modules, env, to_email_list, slack_channel)
+            nonprod_alertmanager(alertmanager_file,
+                                 prj_name,
+                                 modules,
+                                 env,
+                                 to_email_list,
+                                 slack_channel)
         else:
-            prod_alertmanager(alertmanager_file, prj_name, modules, env, to_email_list, slack_channel, pagerduty_service_key_id)
+            prod_alertmanager(alertmanager_file,
+                              prj_name,
+                              modules,
+                              env,
+                              to_email_list,
+                              slack_channel,
+                              pagerduty_service_key_id)
 
 
-def nonprod_alertmanager(alertmanager_file, prj_name, modules, env, to_email_list, slack_channel):
+def nonprod_alertmanager(alertmanager_file,
+                         prj_name,
+                         modules,
+                         env,
+                         to_email_list,
+                         slack_channel):
     alert_route = []
     alert_receiver = []
     with open(alertmanager_file, "r") as asmr:
@@ -145,7 +180,13 @@ def nonprod_alertmanager(alertmanager_file, prj_name, modules, env, to_email_lis
         asmw.writelines(alert_receiver)
 
 
-def prod_alertmanager(alertmanager_file, prj_name, modules, env, to_email_list, slack_channel, pagerduty_service_key_id):
+def prod_alertmanager(alertmanager_file,
+                      prj_name,
+                      modules,
+                      env,
+                      to_email_list,
+                      slack_channel,
+                      pagerduty_service_key_id):
     alert_route = []
     alert_receiver = []
     with open(alertmanager_file, "r") as asmr:
@@ -202,7 +243,13 @@ def prod_alertmanager(alertmanager_file, prj_name, modules, env, to_email_list, 
 # UPDATE THE PROJECT INFORMATION IN ALERTMANAGER CONFIG FILE
 #
 # -------------------------------------------------------------
-def alertmanager_replace_existing_entry(alertmanager_file, prj_name, tools, to_email_list, env, slack_channel, pagerduty_service_key_id):
+def alertmanager_replace_existing_entry(alertmanager_file,
+                                        prj_name,
+                                        tools,
+                                        to_email_list,
+                                        env,
+                                        slack_channel,
+                                        pagerduty_service_key_id):
     logger.debug("[alertmanager] file location: %s", alertmanager_file)
     logger.debug("[alertmanager] project name: %s", prj_name)
     logger.debug("[alertmanager] to_email_list: %s", to_email_list)
@@ -261,7 +308,7 @@ def update_alertmanager(env, project_name, alertmanager_config_file_path):
         update_alertmanager_config(alertmanager_config_file_path)
         update_github_alertmanager(alertmanager_config_file_path, project_name, env)
     except BaseException:
-        logger.error("[prometheus] failed to update alertmanager config")
+        logger.error("[alertmanager] failed to update alertmanager config")
 
 
 def update_alertmanager_config(alertmanager_file):
@@ -271,6 +318,6 @@ def update_alertmanager_config(alertmanager_file):
             logger.debug("renaming [{}] to [{}]" .format(alertmanager_file + "-updated.yaml", alertmanager_file))
             os.rename(alertmanager_file + "-updated.yaml", alertmanager_file)
         except BaseException:
-            logger.error("[alertmanager] failed to apply change on config.yaml...")
+            logger.error("[alertmanager] failed to apply change on config.yaml")
 
 

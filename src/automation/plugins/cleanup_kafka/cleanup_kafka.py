@@ -1,9 +1,9 @@
-import sys
 import time
-from core.base_function import *
-from core.logging_function import logger
-sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+import logging
 
+from base.base_function import *
+
+logger = logging.getLogger(__name__)
 
 class CleanupKafka:
     def __init__(self):

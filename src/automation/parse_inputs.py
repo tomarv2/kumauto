@@ -1,6 +1,6 @@
 import ruamel.yaml as yaml
 import logging
-from automation.core.base_function import *
+from automation.base.base_function import *
 
 logger = logging.getLogger(__name__)
 

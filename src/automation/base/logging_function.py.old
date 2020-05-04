@@ -1,7 +1,7 @@
 import sys, os
 from core.base_function import *
 import logging
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+#sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 # todo: change class name to CapWords convention

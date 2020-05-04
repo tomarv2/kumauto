@@ -1,0 +1,1272 @@
+global:
+    resolve_timeout: 1h
+    smtp_from: demo@demo.com
+    smtp_smarthost: smtp.gmail.com:587 #465(SSL) or 465(TLS) based on requirement
+    #smtp_require_tls: false
+    smtp_auth_username: demo@demo.com
+    smtp_auth_password: password
+    pagerduty_url: https://events.pagerduty.com/v2/enqueue
+    slack_api_url: https://hooks.slack.com/services/T12345/T12345/12345
+  
+  #####################################################
+templates:
+  - /etc/alertmanager/template/*.tmpl
+  
+  #####################################################
+inhibit_rules:
+  - source_match:
+      severity: critical
+    target_match:
+      severity: warning
+    equal:
+    - alertname
+    - cluster
+    - service
+  
+  #####################################################
+route:
+    receiver: 'default-email'
+    group_by: ['alertname', 'cluster', 'service']
+    group_wait: 10s
+    group_interval: 5m
+    repeat_interval: 4h
+    routes:
+  #  - receiver: 'infrastructure-monitoring-email'
+  #    match_re:
+  #      service: ^(infrastructure*)$
+  
+    - receiver: 'kubernetes-monitoring-email'
+      match_re:
+        service: kubernetes-monitoring-blackbox
+  
+    - receiver: 'demo-service-team'
+      match_re:
+        service: ^(demo*)$ # NOTE: service = job_name(from: prometheus(config.yaml))
+  #    match:
+  #      service: demo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+
+  - receiver: 'aws-testrepo-service-team'
+    match:
+      service: aws-testrepo-service-blackbox
+  ################ ALERT_ROUTES ABOVE #################
+  #####################################################
+  
+receivers:
+  ################# START JOB #########################
+  - name: 'default-email'
+    email_configs:
+    - send_resolved: true
+      to: demo@demo.com
+      from: demo@demo.com
+      smarthost: smtp.gmail.com:587
+      headers:
+        From: demo@demo.com
+        Subject: '{{ template "email.default.subject" . }}'
+        To: demo@demo.com
+      html: '{{ template "email.default.html" . }}'
+      #require_tls: false
+  #  slack_configs:
+  #  - send_resolved: true
+  #    api_url: https://hooks.slack.com/services/T12345/T12345/T12345
+  #    channel: demo-alerts
+  ################### END JOB #########################
+  ################# START JOB #########################
+  - name: 'kubernetes-monitoring-email'
+    email_configs:
+    - send_resolved: true
+      to: 'demo@demo.com,demo1@demo.com' ## TO CHANGE!!!
+      from: demo@demo.com
+      smarthost: smtp.gmail.com:587
+      headers:
+        From: demo@demo.com
+        Subject: '{{ template "email.default.subject" . }}'
+        To: 'demo@demo.com,demo1@demo.com' ## TO CHANGE!!!
+      html: '{{ template "email.default.html" . }}'
+      #require_tls: false
+    slack_configs:
+    - send_resolved: true
+      api_url: https://hooks.slack.com/services/T12345/T12345/T12345
+      channel: demo-alerts
+      #text: '{{ .GroupLabels.alertname }}: {{ .Annotations.summary }} {{ end }}'
+  ################### END JOB #########################
+  ################# START JOB #########################
+  - name: 'demo-service-team'
+    email_configs:
+    - send_resolved: true
+      to: 'demo@demo.com' # DO NOT REMOVE TAG: demo-service-team
+      from: demo@demo.com
+      smarthost: smtp.gmail.com:587
+      headers:
+        From: demo@demo.com
+        Subject: '{{ template "email.default.subject" . }}'
+        To: 'demo@demo.com' # DO NOT REMOVE TAG: demo-service-team
+      html: '{{ template "email.default.html" . }}'
+      #require_tls: false
+    pagerduty_configs:
+    - send_resolved: true
+      service_key: 123456789 # DO NOT REMOVE TAG: demo-service-team
+      url: https://events.pagerduty.com/v2/enqueue
+      client: '{{ template "pagerduty.default.client" . }}'
+      client_url: '{{ template "pagerduty.default.clientURL" . }}'
+      description: '{{template "pagerduty.default.description" .}}'
+    slack_configs:
+    - send_resolved: true
+      api_url: https://hooks.slack.com/services/T12345/T12345/T12345
+      channel: "demo-alerts"
+    - send_resolved: true
+      api_url: https://hooks.slack.com/services/T12345/T12345/T12345
+      channel: "demo-alerts" # DO NOT REMOVE TAG: demo-service-team
+  ################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+
+################# START JOB #########################
+- name: 'aws-testrepo-service-team'
+  email_configs:
+  - send_resolved: true
+    to: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    from: aws-prometheus@demo.com
+    smarthost: outmail.demo.com:25
+    headers:
+      From: aws-prometheus@demo.com
+      Subject: '{{ template "email.default.subject" . }}'
+      To: 'test-email@demo.com' # DO NOT REMOVE TAG: aws-testrepo-service-team
+    html: '{{ template "email.default.html" . }}'
+    require_tls: false
+  pagerduty_configs:
+  - send_resolved: true
+    service_key: 123abc # DO NOT REMOVE TAG: aws-testrepo-service-team
+    url: https://events.pagerduty.com/v2/enqueue
+    client: '{{ template "pagerduty.default.client" . }}'
+    client_url: '{{ template "pagerduty.default.clientURL" . }}'
+    description: '{{template "pagerduty.default.description" .}}'
+  slack_configs:
+  - send_resolved: true
+    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+    channel: "test-alerts"
+  - send_resolved: true 
+    api_url: https://hooks.slack.com/services/XYZ
+    channel:  "test" # DO NOT REMOVE TAG: aws-testrepo-service-team
+################### END JOB #########################
+  ############## ALERT_RECEIVERS ABOVE ################
+  

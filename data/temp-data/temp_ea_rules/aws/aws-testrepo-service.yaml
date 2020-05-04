@@ -1,0 +1,16 @@
+es_host: elasticsearch.default
+es_port: 9200
+name: aws-aws-testrepo-service
+type: any
+index: dw-services-app-logs-*
+num_events: 1
+filter:
+- query:
+    query_string:
+      query: "NA_ELASTALERT"
+alert:
+- "pagerduty"
+alert_subject:  "AWS - Pipeline: aws-testrepo-service - Type: Application(service)"
+pagerduty_service_key: 123abc
+pagerduty_client_name: elastalert
+###################### ELASTALERT RULES GO ABOVE ######################

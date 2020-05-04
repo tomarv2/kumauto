@@ -5,23 +5,20 @@ from .setup_prometheus import build_prometheus, update_prometheus
 from .setup_alertmanager import build_alertmanager, update_alertmanager
 from .setup_elastalert import build_elastalert, update_elastalert
 from .logging import configure_logging
-from automation.core.base_function import *
+from automation.base.base_function import *
 from .validation import *
+from .config import config
 
-
+config_yaml = config("CONFIG_YAML_FILE")
+requirements_yaml = config("REQUIREMENTS_YAML_FILE")
+user_input_env = config("USER_INPUT_ENV")
 logger = logging.getLogger(__name__)
-
-config_yaml = '/Users/varun.tomar/Documents/personal_github/mauto/src/automation/config.yaml'  # todo: better arrangement here
-requirements_yaml = '/Users/varun.tomar/Documents/personal_github/mauto/src/automation/user_input.yaml'
 
 
 def configure_logging_cli():
     """Command-line interface to Dispatch."""
     logger.debug("configuring logging")
     configure_logging()
-
-
-user_input_env = 'aws'
 
 
 def entrypoint():
@@ -50,20 +47,40 @@ def entrypoint():
         logger.debug("User Input: Env [{}]" .format(user_input_env_lower))
         logger.debug("User Input: Project name [{}]" .format(parser.project_name))
         logger.debug("User Input: alertmanager config file_path [{}]" .format(parser.alertmanager_config_file_path))
-        build_alertmanager(user_input_env_lower, parser.project_name, parser.alertmanager_config_file_path,
-                           parser.modules, parser.tools, parser.email_to, parser.slack_channel, parser.pagerduty_service_key_id)
+        build_alertmanager(user_input_env_lower,
+                           parser.project_name,
+                           parser.alertmanager_config_file_path,
+                           parser.modules,
+                           parser.tools,
+                           parser.email_to,
+                           parser.slack_channel,
+                           parser.pagerduty_service_key_id)
         os.environ["TEST_ALERTMANAGER"] = "0"
-        build_prometheus(config_yaml, user_input_env_lower, parser.monitoring_config_file_path,
-                         parser.monitoring_rules_dir, parser.monitoring_static_file_dir, parser.project_name,
-                         parser.targets_to_monitor, parser.monitoring_rules_sample_file,
-                         parser.monitoring_static_file_sample_file, parser.modules, parser.project_name_without_env)
+        build_prometheus(config_yaml,
+                         user_input_env_lower,
+                         parser.monitoring_config_file_path,
+                         parser.monitoring_rules_dir,
+                         parser.monitoring_static_file_dir,
+                         parser.project_name,
+                         parser.targets_to_monitor,
+                         parser.monitoring_rules_sample_file,
+                         parser.monitoring_static_file_sample_file,
+                         parser.modules,
+                         parser.project_name_without_env)
         os.environ["TEST_PROMETHEUS"] = "0"
-        build_elastalert(user_input_env_lower, parser.project_name, parser.elastalert_rules_dir,
-                         parser.namespace, parser.ea_query, parser.elastalert_sample_file, parser.elasticsearch_hostname,
-                         parser.email_to, parser.pagerduty_service_key_id, parser.pagerduty_client_name)
+        build_elastalert(user_input_env_lower,
+                         parser.project_name,
+                         parser.elastalert_rules_dir,
+                         parser.namespace,
+                         parser.ea_query,
+                         parser.elastalert_sample_file,
+                         parser.elasticsearch_hostname,
+                         parser.email_to,
+                         parser.pagerduty_service_key_id,
+                         parser.pagerduty_client_name)
         os.environ["TEST_ELASTALERT"] = "0"
     else:
-        logger.error("yaml files validation didn't pass...")
+        logger.error("yaml files validation didn't pass")
         os.environ["TEST_ALERTMANAGER"] = "1"
         os.environ["TEST_PROMETHEUS"] = "1"
         os.environ["TEST_ELASTALERT"] = "1"
@@ -78,12 +95,13 @@ def entrypoint():
             os.environ["TEST_ALERTMANAGER"] = "0"
         else:
             os.environ["TEST_ALERTMANAGER"] = "1"
-            logger.debug("ALERTMANAGER validation didn't pass...")
+            logger.debug("ALERTMANAGER validation didn't pass")
 
     if os.environ["TEST_PROMETHEUS"] == "0":
         logger.debug("TESTING PROMETHEUS")
-        if validate_prometheus_config(parser.monitoring_config_file_path) and validate_prometheus_rules\
-             (parser.monitoring_rules_dir) and validate_prometheus_static_files(parser.monitoring_static_file_dir):
+        if validate_prometheus_config(parser.monitoring_config_file_path) and \
+                validate_prometheus_rules(parser.monitoring_rules_dir) and \
+                validate_prometheus_static_files(parser.monitoring_static_file_dir):
             os.environ["TEST_PROMETHEUS"] = "0"
         else:
             os.environ["TEST_PROMETHEUS"] = "1"
@@ -115,7 +133,10 @@ def entrypoint():
     # Cleanup temporary files
     #
     # -------------------------------------------------------------------------  
-    cleanup(parser.monitoring_rules_dir, parser.monitoring_static_file_dir, parser.monitoring_config_file_path, parser.alertmanager_config_file_path)
+    cleanup(parser.monitoring_rules_dir,
+            parser.monitoring_static_file_dir,
+            parser.monitoring_config_file_path,
+            parser.alertmanager_config_file_path)
 
 
 if __name__ == "__main__":

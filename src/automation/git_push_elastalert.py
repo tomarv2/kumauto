@@ -1,16 +1,21 @@
 import shutil, os, sys
-from automation.core.git_actions import *
-from automation.core.base_function import *
+from automation.base.git_actions import *
+from automation.base.base_function import *
 import yaml
 import logging
+from .config import config
 
 logger = logging.getLogger(__name__)
-
-config_yaml = '/automation/config.yaml'
-
+config_yaml = config("CONFIG_YAML_FILE")
 
 def update_github_elastalert(elastalert_rules_dir, project_name, env):
-    # prase config file
+    #
+    #
+    # TODO: temp return true
+    #
+    #
+    return True
+    # parse config file
     with open(config_yaml, 'r') as stream_config:
             out_config = yaml.load(stream_config)
             ssh_key_path = out_config['ssh_key_path'][0]

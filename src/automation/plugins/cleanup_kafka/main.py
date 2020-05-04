@@ -1,14 +1,13 @@
 import os, sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import logging
+import ruamel.yaml as yaml
 from cleanup_kafka import CleanupKafka
-from core.base_function import *
-config_yaml = '/automation/config.yaml'  # todo: better arrangement here
-requirements_yaml = '/tmp/user_input.yaml'
-# config_yaml = '/Users/devops/Documents/github/automation/config.yaml'  # todo: better arrangement here
-# requirements_yaml = '/Users/devops/Documents/github/automation/user_input.yaml'
-from core.logging_function import logger
-logger.configure(None)
+from base.base_function import *
+from automation.config import config
 
+logger = logging.getLogger(__name__)
+config_yaml = config("CONFIG_YAML_FILE")
+requirements_yaml = config("REQUIREMENTS_YAML_FILE")
 
 def main():
     logger.error("Checking the format of yaml file")
@@ -18,7 +17,7 @@ def main():
         with open(requirements_yaml, 'r') as stream:
             out = yaml.load(stream)
             topic_name = []
-            topic_name.append(out['kafka']['topic']) # todo: list within list
+            topic_name.append(out['kafka']['topic'])  # todo: list within list
             delete_topic = out['kafka']['delete_topic']
             broker_name = out['kafka']['server'][0]
             zk_server_with_node = out['zookeeper']['server']

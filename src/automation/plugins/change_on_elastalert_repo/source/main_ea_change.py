@@ -1,15 +1,14 @@
 import shutil
-import os, sys
+import os
 import yaml
+import logging
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+from base.git_actions import *
+from base.base_function import *
 
-from core.git_actions import *
-from core.base_function import *
-from core.logging_function import logger
-# logger.configure(None)
+logger = logging.getLogger(__name__)
 
-config_yaml = '/automation/config.yaml'
+config_yaml = '/Users/varun.tomar/Documents/personal_github/mauto/src/automation/config.yaml'
 
 with open(config_yaml, 'r') as stream_config:
     out_config = yaml.load(stream_config)
