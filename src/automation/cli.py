@@ -29,6 +29,7 @@ def entrypoint():
     user_input_env_lower = user_input_env.lower()
     logger.debug("Checking the format of yaml file")
     parser = ParseInputs()
+    logger.debug('config file: {}' .format(config_yaml))
     parser.parse_user_config_yaml(requirements_yaml, config_yaml, user_input_env_lower)
     os.environ["TEST_ALERTMANAGER"] = "1"
     os.environ["TEST_PROMETHEUS"] = "1"

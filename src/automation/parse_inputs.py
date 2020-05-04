@@ -1,8 +1,5 @@
 import ruamel.yaml as yaml
 import logging
-import sys
-# sys.path.append("..")
-#sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from automation.core.base_function import *
 
 logger = logging.getLogger(__name__)

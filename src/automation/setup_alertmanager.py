@@ -37,7 +37,7 @@ def build_alertmanager(user_input_env, project_name, alertmanager_config_file_pa
             alertmanager_replace_existing_entry(alertmanager_fileloc, project_name, convert_list_to_str(tools),
                                                 convert_list_to_str(email_to), user_input_env, slack_channel, pagerduty_service_key_id)
     except:
-        logger.error("[alertmanager] unable to update/create config...")
+        logger.error("[alertmanager] unable to update/create config")
 
 
 # -------------------------------------------------------------
@@ -49,26 +49,27 @@ def alertmanager_validate_current_setup(basefile_list, project_name, env):
     logger.debug("[alertmanager] validating if alert already exists for [{}] in config [{}]" .format(project_name, basefile_list))
     try:
         with open(basefile_list, 'r') as stream:
+            logger.debug("loading the yaml")
             out = yaml.load(stream, Loader=yaml.Loader)
             print(out['route'])
             try:
-                logger.debug("[alertmanager] getting list of currently monitored projects...")
+                logger.debug("[alertmanager] getting list of currently monitored projects")
                 current_values_in_alertmanager.append(out['route']['routes'])
             except BaseException:
-                logger.error("[alertmanager] unable to get list of currently monitored projects, exiting...")
+                logger.error("[alertmanager] unable to get list of currently monitored projects, exiting")
                 raise SystemExit
     except:
-        logger.error("[alertmanager] unable to parse: {}" .format(basefile_list))
+        logger.error("[alertmanager] file does not exist or unable to parse: {}" .format(basefile_list))
     values = []
     try:
         for i in [x for x in current_values_in_alertmanager]:
             for j in i:
                 values.append(j)
     except:
-        logger.debug("[alertmanager] no project config exists...")
+        logger.debug("[alertmanager] no project config exists")
         pass
     try:
-        logger.debug("[alertmanager] verifying if project already exists...")
+        logger.debug("[alertmanager] verifying if project already exists")
         if project_name in (str(values)):
             logger.debug("[alertmanager] monitoring already exists for: {}" .format(project_name))
             return 1
@@ -76,7 +77,7 @@ def alertmanager_validate_current_setup(basefile_list, project_name, env):
             logger.debug("[alertmanager] monitoring does not exist for: {}" .format(project_name))
             return 0
     except:
-        logger.debug("[alertmanager] no matching project found...")
+        logger.debug("[alertmanager] no matching project found")
         pass
 
 
@@ -86,7 +87,7 @@ def alertmanager_validate_current_setup(basefile_list, project_name, env):
 #
 # -------------------------------------------------------------
 def alertmanager_create_new_entry(alertmanager_file, prj_name, modules, env, tools, to_email_list, slack_channel, pagerduty_service_key_id):
-    print("inside alertmanager_create_new_entry")
+    logger.debug("inside alertmanager_create_new_entry")
     if 'alertmanager' in tools:
         logger.debug("[alertmanager] to_email_list: {}" .format(to_email_list))
         logger.debug("[alertmanager] taking backup of file...")
@@ -260,7 +261,7 @@ def update_alertmanager(env, project_name, alertmanager_config_file_path):
         update_alertmanager_config(alertmanager_config_file_path)
         update_github_alertmanager(alertmanager_config_file_path, project_name, env)
     except BaseException:
-        logger.error("[prometheus] failed to update alertmanager config...")
+        logger.error("[prometheus] failed to update alertmanager config")
 
 
 def update_alertmanager_config(alertmanager_file):
