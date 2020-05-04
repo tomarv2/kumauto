@@ -1,9 +1,9 @@
 import time
 import logging
-
 from base.base_function import *
 
 logger = logging.getLogger(__name__)
+
 
 class CleanupKafka:
     def __init__(self):

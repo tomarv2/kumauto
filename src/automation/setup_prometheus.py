@@ -9,7 +9,6 @@ from automation.base.base_function import *
 from .git_push_prometheus import update_github_prometheus
 
 logger = logging.getLogger(__name__)
-
 current_values_in_prometheus_config = []
 
 

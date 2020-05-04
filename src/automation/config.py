@@ -2,7 +2,7 @@
 
 from starlette.config import Config
 
-env = '/Users/varun.tomar/Documents/personal_github/mauto/src/automation/.env'
+env = '.env'
 config = Config(env)
 #
 LOG_LEVEL = "DEBUG"

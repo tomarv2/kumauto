@@ -9,7 +9,11 @@ config_yaml = config("CONFIG_YAML_FILE")
 logger = logging.getLogger(__name__)
 
 
-def update_github_prometheus(prometheus_rules_dir, prometheus_static_files_dir, prometheus_config_file, project_name, env):
+def update_github_prometheus(prometheus_rules_dir,
+                             prometheus_static_files_dir,
+                             prometheus_config_file,
+                             project_name,
+                             env):
     #
     # NOTE: temp return true
     #
@@ -118,7 +122,7 @@ def update_github_prometheus(prometheus_rules_dir, prometheus_static_files_dir, 
                 except BaseException:
                     logger.error("[prometheus] static_file copy failed")
         except BaseException:
-            logger.error( "[prometheus] directory/files already exists: {}" .format(prometheus_static_files_path))
+            logger.error("[prometheus] directory/files already exists: {}" .format(prometheus_static_files_path))
 
     # -------------------------------------------------------------------------
     #

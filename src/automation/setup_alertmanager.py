@@ -15,7 +15,7 @@ current_values_in_alertmanager = []
 
 # -------------------------------------------------------------
 #
-# BUILD THE FILES OF ALERTMANAGER
+# BUILD THE FILES FOR ALERTMANAGER
 #
 # -------------------------------------------------------------
 def build_alertmanager(user_input_env,

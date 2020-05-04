@@ -8,6 +8,7 @@ from .config import config
 logger = logging.getLogger(__name__)
 config_yaml = config("CONFIG_YAML_FILE")
 
+
 def update_github_elastalert(elastalert_rules_dir, project_name, env):
     #
     #

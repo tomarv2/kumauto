@@ -2,13 +2,13 @@ import shutil
 import os
 import yaml
 import logging
+from automation.config import config
 
 from base.git_actions import *
 from base.base_function import *
 
 logger = logging.getLogger(__name__)
-
-config_yaml = '/Users/varun.tomar/Documents/personal_github/mauto/src/automation/config.yaml'
+config_yaml = config("CONFIG_YAML_FILE")
 
 with open(config_yaml, 'r') as stream_config:
     out_config = yaml.load(stream_config)
