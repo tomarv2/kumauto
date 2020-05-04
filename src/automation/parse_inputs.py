@@ -54,7 +54,6 @@ class ParseInputs:
         # parse config file
         with open(config_yaml, 'r') as stream_config:
             out_config = yaml.load(stream_config, Loader=yaml.Loader)
-            #logger.debug("out_config: ", out_config)
             self.alertmanager_config_file_path = out_config['prometheus']['alertmanager']['config']['file_path'][0]
             self.alertmanager_config_nfs_path = out_config['prometheus']['alertmanager']['config']['nfs_path'][0]
             self.monitoring_config_file_path = out_config['prometheus']['monitoring']['config']['file_path'][0]

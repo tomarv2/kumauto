@@ -1,12 +1,14 @@
 import os
 from git import Repo, Git
+import logging
 import hashlib
 # from core.logging_function import logger
 
+logger = logging.getLogger(__name__)
+
 
 def update_repo(git_ssh_cmd, repo_path, branch):
-    logger.error("-" * 75)
-    logger.error("update repo...")
+    logger.debug("update repo...")
     with Git().custom_environment(GIT_SSH_COMMAND=git_ssh_cmd):
         os.environ['GIT_SSH_COMMAND'] = git_ssh_cmd
         repo_instance = Repo(repo_path)

@@ -30,13 +30,10 @@ def lockfiles_setup(base_file, backup_file):
     backup_file_checksum.append(md5sum(backup_file))
     lock = FileLock(lock_path)
     with lock:
-        logger.error("-" * 75)
-        logger.error("\nbefore lock...")
+        logger.debug("\nbefore lock...")
     lock.acquire()
     try:
-        logger.error("-" * 75)
-        logger.error("during lock...")
-        logger.error("-" * 75)
+        logger.debug("during lock...")
         try:
             shutil.copy2(base_file, backup_file)
         except:
@@ -44,8 +41,7 @@ def lockfiles_setup(base_file, backup_file):
             raise SystemExit
 
     finally:
-        logger.error("-" * 75)
-        logger.error("releasing lock...")
+        logger.debug("releasing lock...")
         lock.release()
 
 

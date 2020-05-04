@@ -23,15 +23,17 @@ current_values_in_alertmanager = []
 # BUILD THE FILES OF ALERTMANAGER
 #
 # -------------------------------------------------------------
-def build_alertmanager(user_input_env, project_name, alertmanager_config_file_path, modules, tools, email_to, slack_channel, pagerduty_service_key_id):
+def build_alertmanager(user_input_env, project_name, alertmanager_config_file_path, modules, tools,
+                       email_to, slack_channel, pagerduty_service_key_id):
+    logger.debug("inside build_alertmanager function")
     alertmanager_fileloc = alertmanager_config_file_path
     try:
         if alertmanager_validate_current_setup(alertmanager_fileloc, project_name, user_input_env) == 0:
-            logger.error('[alertmanager] configuring monitoring for: {}' .format(project_name))
+            logger.info('[alertmanager] configuring monitoring for: {}' .format(project_name))
             alertmanager_create_new_entry(alertmanager_fileloc, project_name, convert_list_to_str(modules), user_input_env,
                             convert_list_to_str(tools), convert_list_to_str(email_to), convert_list_to_slack_channel(slack_channel), pagerduty_service_key_id)
         else:
-            logger.error("[alertmanager] config already exists. Updating contact information: %s", user_input_env)
+            logger.info("[alertmanager] config already exists. Updating contact information: %s", user_input_env)
             alertmanager_replace_existing_entry(alertmanager_fileloc, project_name, convert_list_to_str(tools),
                                                 convert_list_to_str(email_to), user_input_env, slack_channel, pagerduty_service_key_id)
     except:
@@ -44,37 +46,37 @@ def build_alertmanager(user_input_env, project_name, alertmanager_config_file_pa
 #
 # -------------------------------------------------------------
 def alertmanager_validate_current_setup(basefile_list, project_name, env):
-    logger.debug("[alertmanager] validating if alert already exists for {} in config: {}" .format(project_name, basefile_list))
+    logger.debug("[alertmanager] validating if alert already exists for [{}] in config [{}]" .format(project_name, basefile_list))
     try:
         with open(basefile_list, 'r') as stream:
             out = yaml.load(stream, Loader=yaml.Loader)
             print(out['route'])
             try:
-                logger.error("[alertmanager] getting list of currently monitored projects...")
+                logger.debug("[alertmanager] getting list of currently monitored projects...")
                 current_values_in_alertmanager.append(out['route']['routes'])
             except BaseException:
                 logger.error("[alertmanager] unable to get list of currently monitored projects, exiting...")
                 raise SystemExit
     except:
-        logger.error("[alertmanager] unable to parse: %s", basefile_list)
+        logger.error("[alertmanager] unable to parse: {}" .format(basefile_list))
     values = []
     try:
         for i in [x for x in current_values_in_alertmanager]:
             for j in i:
                 values.append(j)
     except:
-        logger.error("[alertmanager] no project config exists...")
+        logger.debug("[alertmanager] no project config exists...")
         pass
     try:
-        logger.error("[alertmanager] verifying if project already exists...")
+        logger.debug("[alertmanager] verifying if project already exists...")
         if project_name in (str(values)):
-            logger.error("[alertmanager] monitoring already exists for: %s", project_name)
+            logger.debug("[alertmanager] monitoring already exists for: {}" .format(project_name))
             return 1
         else:
-            logger.error("[alertmanager] monitoring does not exist for: %s", project_name)
+            logger.debug("[alertmanager] monitoring does not exist for: {}" .format(project_name))
             return 0
     except:
-        logger.error("[alertmanager] no matching project found...")
+        logger.debug("[alertmanager] no matching project found...")
         pass
 
 
@@ -112,7 +114,7 @@ def nonprod_alertmanager(alertmanager_file, prj_name, modules, env, to_email_lis
     with open(alertmanager_file + "-updated.yaml", "w") as asmw:
         asmw.writelines(alert_route)
     # os.rename(alertmanager_file + "-updated.yaml", alertmanager_file)
-    logger.error("[alertmanager] updating alert receivers section...")
+    logger.debug("[alertmanager] updating alert receivers section...")
     with open(alertmanager_file + "-updated.yaml", "r") as asmr:
         for line in asmr.readlines():
             if "ALERT_RECEIVERS ABOVE" in line:
@@ -157,7 +159,7 @@ def prod_alertmanager(alertmanager_file, prj_name, modules, env, to_email_list, 
     with open(alertmanager_file + "-updated.yaml", "w") as asmw:
         asmw.writelines(alert_route)
     # os.rename(alertmanager_file + "-updated.yaml", alertmanager_file)
-    logger.error("[alertmanager] updating alert receivers section...")
+    logger.debug("[alertmanager] updating alert receivers section...")
     with open(alertmanager_file + "-updated.yaml", "r") as asmr:
         for line in asmr.readlines():
             if "ALERT_RECEIVERS ABOVE" in line:
@@ -217,7 +219,7 @@ def alertmanager_replace_existing_entry(alertmanager_file, prj_name, tools, to_e
     logger.debug("tag: %s", tag)
     logger.debug("final_line: %s", final_to_email_list)
     if 'alertmanager' in tools:
-        logger.error("[alertmanager] trying to update alertmanager config.yaml file..")
+        logger.debug("[alertmanager] trying to update alertmanager config.yaml file..")
         copyfile(alertmanager_file, alertmanager_file + "-updated.yaml")
         for line in fileinput.input([alertmanager_file + "-updated.yaml"], inplace=True):
             try:
@@ -255,7 +257,6 @@ def alertmanager_replace_existing_entry(alertmanager_file, prj_name, tools, to_e
 # -------------------------------------------------------------
 def update_alertmanager(env, project_name, alertmanager_config_file_path):
     try:
-        logger.error("[alertmanager] updating repo...")
         update_alertmanager_config(alertmanager_config_file_path)
         update_github_alertmanager(alertmanager_config_file_path, project_name, env)
     except BaseException:
@@ -263,9 +264,10 @@ def update_alertmanager(env, project_name, alertmanager_config_file_path):
 
 
 def update_alertmanager_config(alertmanager_file):
+    logger.debug("[alertmanager] updating config")
     if os.path.exists(alertmanager_file + "-updated.yaml"):
         try:
-            logger.error("renaming  %s to  %s ", alertmanager_file + "-updated.yaml", alertmanager_file)
+            logger.debug("renaming [{}] to [{}]" .format(alertmanager_file + "-updated.yaml", alertmanager_file))
             os.rename(alertmanager_file + "-updated.yaml", alertmanager_file)
         except BaseException:
             logger.error("[alertmanager] failed to apply change on config.yaml...")

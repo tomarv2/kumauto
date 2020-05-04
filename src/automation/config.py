@@ -2,8 +2,8 @@ import logging
 import os
 import base64
 
-# # from starlette.config import Config
-# from starlette.datastructures import CommaSeparatedStrings
+from starlette.config import Config
+from starlette.datastructures import CommaSeparatedStrings
 #
 #
 # # if we have metatron available to us, lets use it to decrypt our secrets in memory
@@ -62,11 +62,11 @@ import base64
 #         from starlette.datastructures import Secret
 #
 #
-# config = Config(".env")
+config = Config(".env")
 
 #LOG_LEVEL = config("LOG_LEVEL", default=logging.WARNING)
 LOG_LEVEL = 'DEBUG'
-#ENV = config("ENV", default="local")
+ENV = config("ENV", default="local")
 
 # DISPATCH_UI_URL = config("DISPATCH_UI_URL")
 # DISPATCH_HELP_EMAIL = config("DISPATCH_HELP_EMAIL")

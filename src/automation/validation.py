@@ -18,7 +18,7 @@ def validate_prometheus_config(prometheus_config_file_path):
         else:
             return False
     else:
-        logger.error("file %s does not exist", prometheus_config_file_path + '-updated.yaml')
+        logger.debug("file %s does not exist", prometheus_config_file_path + '-updated.yaml')
         return True
 
 

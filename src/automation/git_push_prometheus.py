@@ -174,16 +174,20 @@ def update_github_prometheus(prometheus_rules_dir, prometheus_static_files_dir, 
 
 
 def update_github_alertmanager(alertmanager_config_file, project_name, env):
-    # prase config file
+    logger.debug("[alertmanager] updating repo")
+    #
+    # parse config file
+    #
     with open(config_yaml, 'r') as stream_config:
             out_config = yaml.load(stream_config)
             ssh_key_path = out_config['ssh_key_path'][0]
             branch = out_config['branch'][0]
             repo_path = out_config['prometheus']['monitoring']['repo']['path'][0]
             repo_url = out_config['prometheus']['monitoring']['repo']['url'][0]
-
-            
-    # note: the ssh key is already in the Dockerfile
+    #
+    # NOTE: the ssh key should exist in the Dockerfile
+    # use environment variables to pass containers
+    #
     logger.debug("[prometheus] push to git...")
     logger.debug("[prometheus] ssh_key_path: %s", ssh_key_path)
     git_ssh_cmd = 'ssh -o StrictHostKeyChecking=no -i %s' % ssh_key_path
@@ -196,14 +200,14 @@ def update_github_alertmanager(alertmanager_config_file, project_name, env):
     logger.debug("[prometheus] alertmanager_config_path: %s", alertmanager_config_path)
 
     try:
-        logger.error("[prometheus] verify if repo exists locally: %s", repo_path)
+        logger.debug("[prometheus] verify if repo exists locally: %s", repo_path)
         if os.path.exists(repo_path):
             shutil.rmtree(repo_path)
         repo_instance = clone_repo(git_ssh_cmd, repo_url, repo_path, branch)
     except BaseException:
         logger.error('[prometheus] unable to clone...')
         raise SystemExit
-    logger.error("[prometheus] checkout branch: %s", branch)
+    logger.debug("[prometheus] checkout branch: %s", branch)
     checkout_branch(git_ssh_cmd, repo_instance, branch)
 
     # -------------------------------------------------------------------------
@@ -213,7 +217,8 @@ def update_github_alertmanager(alertmanager_config_file, project_name, env):
     # -------------------------------------------------------------------------
     for target in get_list_env(env):
         alertmanager_config_path_env = os.path.join(alertmanager_config_path, target)
-        logger.error("[prometheus] copy from: %s to : %s", alertmanager_config_file, os.path.join(alertmanager_config_path_env, 'config.yaml'))
+        logger.debug("[prometheus] copy from: {} to : {}" .format(
+            alertmanager_config_file, os.path.join(alertmanager_config_path_env, 'config.yaml')))
         try:
             if os.path.isfile(alertmanager_config_file):
                 if not os.path.exists(alertmanager_config_path_env):
@@ -224,9 +229,9 @@ def update_github_alertmanager(alertmanager_config_file, project_name, env):
                         pass
                 ##
                 try:
-                    logger.error("[prometheus] copying alertmanager config file")
+                    logger.debug("[prometheus] copying alertmanager config file")
                     if not os.path.exists(os.path.join(alertmanager_config_path_env,'config.yaml')):
-                        shutil.copy( alertmanager_config_file, os.path.join( alertmanager_config_path_env, 'config.yaml'))
+                        shutil.copy(alertmanager_config_file, os.path.join( alertmanager_config_path_env, 'config.yaml'))
                     else:
                         logger.error("file exists ")
                         if not compare_files(alertmanager_config_file, os.path.join(alertmanager_config_path_env,'config.yaml')):
@@ -245,8 +250,8 @@ def update_github_alertmanager(alertmanager_config_file, project_name, env):
     #    Commit and push all changes
     #
     # -------------------------------------------------------------------------
-    logger.error("[prometheus] git commit...")
+    logger.debug("[prometheus] git commit...")
     commit_changes(git_ssh_cmd,repo_instance,branch,project_name)
-    logger.error("[prometheus] git push...")
+    logger.debug("[prometheus] git push...")
     push_changes(git_ssh_cmd, repo_instance, branch)
 
