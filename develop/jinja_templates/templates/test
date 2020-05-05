@@ -1,0 +1,6 @@
+  ################# START JOB #########################
+  - name: '{{ name }}'
+    email_configs:
+    - send_resolved: true
+      to: {{ email_to }} # DO NOT REMOVE TAG: {{ name }}
+

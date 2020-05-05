@@ -1,0 +1,18 @@
+global:
+    resolve_timeout: 1h
+    smtp_from: demo@demo.com
+    smtp_smarthost: smtp.gmail.com:587 #465(SSL) or 465(TLS) based on requirement
+    #smtp_require_tls: false
+    smtp_auth_username: demo@demo.com
+    smtp_auth_password: password
+    pagerduty_url: https://events.pagerduty.com/v2/enqueue
+    slack_api_url: https://hooks.slack.com/services/T12345/T12345/12345
+
+  #####################################################
+templates:
+  - /etc/alertmanager/template/*.tmplmary }} {{ end }}'
+  ################### END JOB #########################
+
+  ################### END JOB #########################
+
+  ############## ALERT_RECEIVERS ABOVE ################

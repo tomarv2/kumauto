@@ -123,7 +123,7 @@ def get_project_name_env(requirements_yaml_path, env):
 
 
 def convert_list_to_slack_channel(list):
-    query_string = '\n  - send_resolved: true \n    api_url: https://hooks.slack.com/services/XYZ\n    channel:  '.join(
+    query_string = '\n    - send_resolved: true \n      api_url: https://hooks.slack.com/services/XYZ\n      channel:  '.join(
         [parse_query(item) for array in list for item in array])
     return query_string
 

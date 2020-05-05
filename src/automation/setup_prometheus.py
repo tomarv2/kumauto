@@ -319,7 +319,7 @@ def update_targets(prometheus_staticfiles_dir, project_name, end_point, modules,
                 old_targets.append(out[0]['targets'])
                 new_targets.append(end_point)
         new_targets_string = " ".join(str(x) for x in new_targets)
-        logger.error("[prometheus] new target: {}" .format(new_targets_string))
+        logger.debug("[prometheus] new target: {}" .format(new_targets_string))
         for i in old_targets:
             for j in i:
                 clean_list.append(j)

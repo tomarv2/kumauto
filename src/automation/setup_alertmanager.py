@@ -7,9 +7,10 @@ import ruamel.yaml as yaml
 import logging
 from automation.base.base_function import *
 from .git_push_prometheus import update_github_alertmanager
+# Imports from Jinja2
+from jinja2 import Environment, FileSystemLoader
 
 logger = logging.getLogger(__name__)
-
 current_values_in_alertmanager = []
 
 
@@ -29,6 +30,7 @@ def build_alertmanager(user_input_env,
     logger.debug("inside build_alertmanager function")
     alertmanager_fileloc = alertmanager_config_file_path
     try:
+        logger.info('[alertmanager] configuring monitoring for1: {}'.format(project_name))
         if alertmanager_validate_current_setup(alertmanager_fileloc, project_name, user_input_env) == 0:
             logger.info('[alertmanager] configuring monitoring for: {}' .format(project_name))
             alertmanager_create_new_entry(alertmanager_fileloc,
@@ -40,7 +42,7 @@ def build_alertmanager(user_input_env,
                                           convert_list_to_slack_channel(slack_channel),
                                           pagerduty_service_key_id)
         else:
-            logger.info("[alertmanager] config already exists. Updating contact information: %s", user_input_env)
+            logger.info("[alertmanager] config already exists. Updating contact information: {}" .format(user_input_env))
             alertmanager_replace_existing_entry(alertmanager_fileloc,
                                                 project_name,
                                                 convert_list_to_str(tools),
@@ -81,12 +83,12 @@ def alertmanager_validate_current_setup(basefile_list, project_name, env):
         logger.debug("[alertmanager] no project config exists")
         pass
     try:
-        logger.debug("[alertmanager] verifying if project already exists")
+        logger.info("[alertmanager] verifying if project already exists")
         if project_name in (str(values)):
-            logger.debug("[alertmanager] monitoring already exists for: {}" .format(project_name))
+            logger.info("[alertmanager] monitoring already exists for: {}" .format(project_name))
             return 1
         else:
-            logger.debug("[alertmanager] monitoring does not exist for: {}" .format(project_name))
+            logger.info("[alertmanager] monitoring does not exist for: {}" .format(project_name))
             return 0
     except:
         logger.debug("[alertmanager] no matching project found")
@@ -109,84 +111,28 @@ def alertmanager_create_new_entry(alertmanager_file,
     logger.debug("inside alertmanager_create_new_entry")
     if 'alertmanager' in tools:
         logger.debug("[alertmanager] to_email_list: {}" .format(to_email_list))
-        logger.debug("[alertmanager] taking backup of file...")
+        logger.debug("[alertmanager] taking backup of file")
         logger.debug("[alertmanager] file name: {}" .format(alertmanager_file))
         copyfile(alertmanager_file, alertmanager_file + '.bak')
-        logger.debug("[alertmanager] updating alert rules section...")
-        if 'qa' in env:
-            nonprod_alertmanager(alertmanager_file,
-                                 prj_name,
-                                 modules,
-                                 env,
-                                 to_email_list,
-                                 slack_channel)
-        else:
-            prod_alertmanager(alertmanager_file,
-                              prj_name,
-                              modules,
-                              env,
-                              to_email_list,
-                              slack_channel,
-                              pagerduty_service_key_id)
+        logger.debug("[alertmanager] updating alert rules section")
+        # if 'aws' in env:
+        setup_new_alertmanager(alertmanager_file,
+                          prj_name,
+                          modules,
+                          env,
+                          to_email_list,
+                          slack_channel,
+                          pagerduty_service_key_id)
 
 
-def nonprod_alertmanager(alertmanager_file,
-                         prj_name,
-                         modules,
-                         env,
-                         to_email_list,
-                         slack_channel):
-    alert_route = []
-    alert_receiver = []
-    with open(alertmanager_file, "r") as asmr:
-        for line in asmr.readlines():
-            if "ALERT_ROUTES ABOVE" in line:
-                # we have a match,we want something but we before that...
-                alert_route += '''
-    - receiver: '{0}-team'
-      match:
-        service: {0}-{1}\n'''.format(prj_name, modules)
-            alert_route += line
-    with open(alertmanager_file + "-updated.yaml", "w") as asmw:
-        asmw.writelines(alert_route)
-    # os.rename(alertmanager_file + "-updated.yaml", alertmanager_file)
-    logger.debug("[alertmanager] updating alert receivers section...")
-    with open(alertmanager_file + "-updated.yaml", "r") as asmr:
-        for line in asmr.readlines():
-            if "ALERT_RECEIVERS ABOVE" in line:
-                # we have a match,we want something but we before that...
-                alert_receiver += """
-  ################# START JOB #########################
-  - name: '{0}-team'
-    email_configs:
-    - send_resolved: true
-      to: '{2}' # DO NOT REMOVE TAG: {0}-team
-      from: {1}-prometheus@demo.com
-      smarthost: outmail.demo.com:25
-      headers:
-        From: {1}-prometheus@demo.com
-        Subject: '{{{3} template "email.default.subject" . {4}}}'
-        To: '{2}' # DO NOT REMOVE TAG: {0}-team
-      html: '{{{3} template "email.default.html" . {4}}}'
-      require_tls: false
-    slack_configs:
-    - send_resolved: true
-      api_url: https://hooks.slack.com/services/T12345/B12345
-      channel: {5} # DO NOT REMOVE TAG: {0}-team
-  ################### END JOB #########################\n""".format(prj_name, env, to_email_list, '{', '}', slack_channel)
-            alert_receiver += line
-    # write the file with the new content
-    with open(alertmanager_file + "-updated.yaml", "w") as asmw:
-        asmw.writelines(alert_receiver)
-
-
-def prod_alertmanager(alertmanager_file,
+def setup_new_alertmanager(alertmanager_file,
                       prj_name,
                       modules,
                       env,
                       to_email_list,
                       slack_channel,
                       pagerduty_service_key_id):
+    logger.debug("inside prod_alertmanager")
     alert_route = []
     alert_receiver = []
     with open(alertmanager_file, "r") as asmr:
@@ -201,40 +147,18 @@ def prod_alertmanager(alertmanager_file,
     with open(alertmanager_file + "-updated.yaml", "w") as asmw:
         asmw.writelines(alert_route)
     # os.rename(alertmanager_file + "-updated.yaml", alertmanager_file)
-    logger.debug("[alertmanager] updating alert receivers section...")
+    logger.debug("[alertmanager] updating alert receivers section")
+    # Load Jinja2 template
+    jinja_env = Environment(loader=FileSystemLoader('/Users/varun.tomar/Documents/personal_github/mauto/src/automation/templates'))
+    template = jinja_env.get_template('reciever_notification')
     with open(alertmanager_file + "-updated.yaml", "r") as asmr:
         for line in asmr.readlines():
             if "ALERT_RECEIVERS ABOVE" in line:
-                # we have a match,we want something but we before that...
-                alert_receiver += """
-  ################# START JOB #########################
-  - name: '{0}-team'
-    email_configs:
-    - send_resolved: true
-      to: '{2}' # DO NOT REMOVE TAG: {0}-team
-      from: {1}-prometheus@demo.com
-      smarthost: outmail.demo.com:25
-      headers:
-        From: {1}-prometheus@demo.com
-        Subject: '{{{3} template "email.default.subject" . {4}}}'
-        To: '{2}' # DO NOT REMOVE TAG: {0}-team
-      html: '{{{3} template "email.default.html" . {4}}}'
-      require_tls: false
-    pagerduty_configs:
-    - send_resolved: true
-      service_key: {6} # DO NOT REMOVE TAG: {0}-team
-      url: https://events.pagerduty.com/v2/enqueue
-      client: '{{{3} template "pagerduty.default.client" . {4}}}'
-      client_url: '{{{3} template "pagerduty.default.clientURL" . {4}}}'
-      description: '{{{3}template "pagerduty.default.description" .{4}}}'
-    slack_configs:
-    - send_resolved: true
-      api_url: https://hooks.slack.com/services/T2BT338U9/B12345
-      channel: {5} # DO NOT REMOVE TAG: {0}-team
-  ################### END JOB #########################\n""".format(prj_name, env, to_email_list, '{', '}', slack_channel, pagerduty_service_key_id)
-            alert_receiver += line
+                # Render template using data and print the output
+                alert_receiver += (template.render(name=prj_name, env=env, email_to=to_email_list, smarthost_details='smtp.gmail.com:587', slack_channel=slack_channel, slack_api_url='https://hooks.slack.com/services/T12345/T12345/T12345')).format(prj_name, env, to_email_list, slack_channel, pagerduty_service_key_id)
+                alert_receiver += line
     # write the file with the new content
-    with open(alertmanager_file + "-updated.yaml", "w") as asmw:
+    with open(alertmanager_file + "-updated.yaml", "a") as asmw:
         asmw.writelines(alert_receiver)
 
 
@@ -267,7 +191,7 @@ def alertmanager_replace_existing_entry(alertmanager_file,
     logger.debug("tag: %s", tag)
     logger.debug("final_line: %s", final_to_email_list)
     if 'alertmanager' in tools:
-        logger.debug("[alertmanager] trying to update alertmanager config.yaml file..")
+        logger.debug("[alertmanager] trying to update alertmanager config.yaml file")
         copyfile(alertmanager_file, alertmanager_file + "-updated.yaml")
         for line in fileinput.input([alertmanager_file + "-updated.yaml"], inplace=True):
             try:

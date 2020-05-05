@@ -1,0 +1,7 @@
+name: demo-service-team
+email_to: demo@demo.com, demo1@demo1.com
+smarthost_details:  smtp.gmail.com:587
+slack_api_url: 'https://hooks.slack.com/services/T12345/T12345/T12345'
+slack_channel: 'abc'
+pagerduty_service_key: '12345'
+env: qa

@@ -1,0 +1,29 @@
+  ################# START JOB #########################
+  - name: '{{ name }}'
+    email_configs:
+    - send_resolved: true
+      to: {{ email_to }} # DO NOT REMOVE TAG: {{ name }}
+      from: {{ env }}-prometheus@demo.com
+      smarthost: outmail.demo.com:25
+      headers:
+        From: {{ env }}-prometheus@demo.com
+        Subject: '{% raw %}{{ template "email.default.subject" . }} {% endraw %}'
+        To: '{{ email_to }}' # DO NOT REMOVE TAG: {{ name }}
+      html: '{% raw %} {{ template "email.default.html" . }} {% endraw %}'
+      require_tls: false
+    {% if pagerduty_service_key is defined %}
+    pagerduty_configs:
+    - send_resolved: true
+      service_key: {{ pagerduty_service_key }} # DO NOT REMOVE TAG: {{ name }}
+      url: https://events.pagerduty.com/v2/enqueue
+      client: '{% raw %}{{ template "pagerduty.default.client" . }} {% endraw %}'
+      client_url: '{% raw %}{{ template "pagerduty.default.clientURL" . }} {% endraw %}'
+      description: '{% raw %}{{template "pagerduty.default.description" .}} {% endraw %}'
+    {% endif %}
+    {% if slack_channel is defined %}
+    slack_configs:
+    - send_resolved: true
+      api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+      channel: {{ slack_channel }} # DO NOT REMOVE TAG: {{ name }}
+    {% endif %}
+  ################### END JOB #########################
