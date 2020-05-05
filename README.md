@@ -36,3 +36,27 @@ Pre-reqs:
   
   - Docker image should have ssh keys to connect to git.
 
+***
+
+To create dummy data for testing:
+
+verify if static-files directory exists:
+
+```
+DIR_NAME=demo1
+BASE_PATH='base of dir'
+
+mkdir '$BASE_PATH/mauto/$DIR_NAME/demo-data/monitoring/static-files
+```
+
+verify if alertmanager config file exists:
+
+```
+cp $BASE_PATH/mauto/data/demo-data/alertmanager/config.yaml $BASE_PATH/mauto/$DIR_NAME/demo-data/alertmanager/config.yaml
+```
+
+verify if prometheus config file exists:
+
+```
+cp $BASE_PATH/mauto/data/demo-data/monitoring/config.yaml $BASE_PATH//mauto/junk/demo-data/monitoring/
+```

@@ -2,31 +2,31 @@ prometheus:
   alertmanager:
     config:
       file_path:
-      - /Users/varun.tomar/Documents/personal_github/mauto/data/demo-data/alertmanager/config.yaml
+      - /Users/varun.tomar/Documents/personal_github/mauto/junk/demo-data/alertmanager/config.yaml
       nfs_path: # TODO
-      - /Users/varun.tomar/Documents/personal_github/mauto/data/demo-data/alertmanager/NFS
+      - /Users/varun.tomar/Documents/personal_github/mauto/junk/demo-data/alertmanager/NFS
   monitoring:
     config:
       file_path:
-        - /Users/varun.tomar/Documents/personal_github/mauto/data/demo-data/monitoring/config.yaml
+        - /Users/varun.tomar/Documents/personal_github/mauto/junk/demo-data/monitoring/config.yaml
       nfs_path: # TODO
-        - /Users/varun.tomar/Documents/personal_github/mauto/data/demo-data/monitoring/NFS
+        - /Users/varun.tomar/Documents/personal_github/mauto/junk/demo-data/monitoring/NFS
     rules:
       dir:
-        - /Users/varun.tomar/Documents/personal_github/mauto/data/demo-data/monitoring/rules
+        - /Users/varun.tomar/Documents/personal_github/mauto/junk/demo-data/monitoring/rules
       sample_file:
         - /Users/varun.tomar/Documents/personal_github/mauto/data/sample-files/prometheus/rules/sample-rules.yaml
       sample_file_spark:
         - /Users/varun.tomar/Documents/personal_github/mauto/data/sample-files/prometheus/rules/sample-rules-spark.yaml
       nfs_path:  # TODO
-        - /Users/varun.tomar/Documents/personal_github/mauto/data/demo-data/elastalert/rules/NFS
+        - /Users/varun.tomar/Documents/personal_github/mauto/junk/demo-data/elastalert/rules/NFS
     static_file:
       dir:
-        - /Users/varun.tomar/Documents/personal_github/mauto/data/demo-data/monitoring/static-files
+        - /Users/varun.tomar/Documents/personal_github/mauto/junk/demo-data/monitoring/static-files
       sample_file:
         - /Users/varun.tomar/Documents/personal_github/mauto/data/sample-files/prometheus/static-files/sample-staticfile.yaml
       nfs_path:  # TODO
-        - //Users/varun.tomar/Documents/personal_github/mauto/data/demo-data/monitoring/static-files/NFS
+        - //Users/varun.tomar/Documents/personal_github/mauto/junk/demo-data/monitoring/static-files/NFS
     repo:
       path:
         - /Users/varun.tomar/Documents/personal_github/mauto/data/temp-data/update_github_prometheus/prometheus
@@ -35,16 +35,16 @@ prometheus:
 elastalert:
   rules:
     dir:
-    - /Users/varun.tomar/Documents/personal_github/mauto/data/demo-data/elastalert/rules
+    - /Users/varun.tomar/Documents/personal_github/mauto/junk/demo-data/elastalert/rules
     nfs_path:  # TODO
-    - //Users/varun.tomar/Documents/personal_github/mauto/data/demo-data/elastalert/rules/NFS
+    - //Users/varun.tomar/Documents/personal_github/mauto/junk/demo-data/elastalert/rules/NFS
     sample_file:
     - /Users/varun.tomar/Documents/personal_github/mauto/data/sample-files/elastalert/sample-elastalert-rules.yaml
   config:
     file_path:
-      - /Users/varun.tomar/Documents/personal_github/mauto/data/demo-data/elastalert/config.yaml 
+      - /Users/varun.tomar/Documents/personal_github/mauto/junk/demo-data/elastalert/config.yaml 
     nfs_path: # TODO
-      - /Users/varun.tomar/Documents/personal_github/mauto/data/demo-data/elastalert
+      - /Users/varun.tomar/Documents/personal_github/mauto/junk/demo-data/elastalert
   repo_url:
     - ssh://git@git.demo.com:7999/dp/elastalert.git
   repo_path:
@@ -52,7 +52,7 @@ elastalert:
   rules_repo_name:
     - 'rules'
   EA_rules_schema:
-    - /Users/varun.tomar/Documents/personal_github/mauto/data/demo-data/elastalert/EA-rules-schema.yaml
+    - /Users/varun.tomar/Documents/personal_github/mauto/junk/demo-data/elastalert/EA-rules-schema.yaml
   temporary_ea_rules:
     - /Users/varun.tomar/Documents/personal_github/mauto/data/temp-data/temp_ea_rules
 elasticsearch:

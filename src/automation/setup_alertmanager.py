@@ -143,9 +143,9 @@ def nonprod_alertmanager(alertmanager_file,
             if "ALERT_ROUTES ABOVE" in line:
                 # we have a match,we want something but we before that...
                 alert_route += '''
-  - receiver: '{0}-team'
-    match:
-      service: {0}-{1}\n'''.format(prj_name, modules)
+    - receiver: '{0}-team'
+      match:
+        service: {0}-{1}\n'''.format(prj_name, modules)
             alert_route += line
     with open(alertmanager_file + "-updated.yaml", "w") as asmw:
         asmw.writelines(alert_route)
@@ -156,24 +156,24 @@ def nonprod_alertmanager(alertmanager_file,
             if "ALERT_RECEIVERS ABOVE" in line:
                 # we have a match,we want something but we before that...
                 alert_receiver += """
-################# START JOB #########################
-- name: '{0}-team'
-  email_configs:
-  - send_resolved: true
-    to: '{2}' # DO NOT REMOVE TAG: {0}-team
-    from: {1}-prometheus@demo.com
-    smarthost: outmail.demo.com:25
-    headers:
-      From: {1}-prometheus@demo.com
-      Subject: '{{{3} template "email.default.subject" . {4}}}'
-      To: '{2}' # DO NOT REMOVE TAG: {0}-team
-    html: '{{{3} template "email.default.html" . {4}}}'
-    require_tls: false
-  slack_configs:
-  - send_resolved: true
-    api_url: https://hooks.slack.com/services/T12345/B12345
-    channel: {5} # DO NOT REMOVE TAG: {0}-team
-################### END JOB #########################\n""".format(prj_name, env, to_email_list, '{', '}', slack_channel)
+  ################# START JOB #########################
+  - name: '{0}-team'
+    email_configs:
+    - send_resolved: true
+      to: '{2}' # DO NOT REMOVE TAG: {0}-team
+      from: {1}-prometheus@demo.com
+      smarthost: outmail.demo.com:25
+      headers:
+        From: {1}-prometheus@demo.com
+        Subject: '{{{3} template "email.default.subject" . {4}}}'
+        To: '{2}' # DO NOT REMOVE TAG: {0}-team
+      html: '{{{3} template "email.default.html" . {4}}}'
+      require_tls: false
+    slack_configs:
+    - send_resolved: true
+      api_url: https://hooks.slack.com/services/T12345/B12345
+      channel: {5} # DO NOT REMOVE TAG: {0}-team
+  ################### END JOB #########################\n""".format(prj_name, env, to_email_list, '{', '}', slack_channel)
             alert_receiver += line
     # write the file with the new content
     with open(alertmanager_file + "-updated.yaml", "w") as asmw:
@@ -194,9 +194,9 @@ def prod_alertmanager(alertmanager_file,
             if "ALERT_ROUTES ABOVE" in line:
                 # we have a match,we want something but we before that...
                 alert_route += '''
-  - receiver: '{0}-team'
-    match:
-      service: {0}-{1}\n'''.format(prj_name, modules)
+    - receiver: '{0}-team'
+      match:
+        service: {0}-{1}\n'''.format(prj_name, modules)
             alert_route += line
     with open(alertmanager_file + "-updated.yaml", "w") as asmw:
         asmw.writelines(alert_route)
@@ -207,31 +207,31 @@ def prod_alertmanager(alertmanager_file,
             if "ALERT_RECEIVERS ABOVE" in line:
                 # we have a match,we want something but we before that...
                 alert_receiver += """
-################# START JOB #########################
-- name: '{0}-team'
-  email_configs:
-  - send_resolved: true
-    to: '{2}' # DO NOT REMOVE TAG: {0}-team
-    from: {1}-prometheus@demo.com
-    smarthost: outmail.demo.com:25
-    headers:
-      From: {1}-prometheus@demo.com
-      Subject: '{{{3} template "email.default.subject" . {4}}}'
-      To: '{2}' # DO NOT REMOVE TAG: {0}-team
-    html: '{{{3} template "email.default.html" . {4}}}'
-    require_tls: false
-  pagerduty_configs:
-  - send_resolved: true
-    service_key: {6} # DO NOT REMOVE TAG: {0}-team
-    url: https://events.pagerduty.com/v2/enqueue
-    client: '{{{3} template "pagerduty.default.client" . {4}}}'
-    client_url: '{{{3} template "pagerduty.default.clientURL" . {4}}}'
-    description: '{{{3}template "pagerduty.default.description" .{4}}}'
-  slack_configs:
-  - send_resolved: true
-    api_url: https://hooks.slack.com/services/T2BT338U9/B12345
-    channel: {5} # DO NOT REMOVE TAG: {0}-team
-################### END JOB #########################\n""".format(prj_name, env, to_email_list, '{', '}', slack_channel, pagerduty_service_key_id)
+  ################# START JOB #########################
+  - name: '{0}-team'
+    email_configs:
+    - send_resolved: true
+      to: '{2}' # DO NOT REMOVE TAG: {0}-team
+      from: {1}-prometheus@demo.com
+      smarthost: outmail.demo.com:25
+      headers:
+        From: {1}-prometheus@demo.com
+        Subject: '{{{3} template "email.default.subject" . {4}}}'
+        To: '{2}' # DO NOT REMOVE TAG: {0}-team
+      html: '{{{3} template "email.default.html" . {4}}}'
+      require_tls: false
+    pagerduty_configs:
+    - send_resolved: true
+      service_key: {6} # DO NOT REMOVE TAG: {0}-team
+      url: https://events.pagerduty.com/v2/enqueue
+      client: '{{{3} template "pagerduty.default.client" . {4}}}'
+      client_url: '{{{3} template "pagerduty.default.clientURL" . {4}}}'
+      description: '{{{3}template "pagerduty.default.description" .{4}}}'
+    slack_configs:
+    - send_resolved: true
+      api_url: https://hooks.slack.com/services/T2BT338U9/B12345
+      channel: {5} # DO NOT REMOVE TAG: {0}-team
+  ################### END JOB #########################\n""".format(prj_name, env, to_email_list, '{', '}', slack_channel, pagerduty_service_key_id)
             alert_receiver += line
     # write the file with the new content
     with open(alertmanager_file + "-updated.yaml", "w") as asmw:

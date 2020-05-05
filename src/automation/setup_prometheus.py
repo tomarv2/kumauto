@@ -87,6 +87,7 @@ def prometheus_validate_current_setup(prometheus_basefile, project, module, env)
     logger.debug("[prometheus] env name: [{}]" .format(env))
     final_project_name = project + '-' + module
     logger.debug("[prometheus] project to configure: [{}]" .format(final_project_name))
+    logger.debug("[prometheus] prometheus config file: {}" .format(prometheus_basefile))
     with open(prometheus_basefile, 'r') as stream:
         logger.debug("prometheus_basefile: {}" .format(prometheus_basefile))
         out = yaml.load(stream, Loader=yaml.Loader)
@@ -341,14 +342,17 @@ def update_targets(prometheus_staticfiles_dir, project_name, end_point, modules,
 # --------------------------------------------------
 def update_prometheus(env, project_name, monitoring_config_file_path, monitoring_rules_dir, monitoring_static_file_dir):
     try:
-        logger.debug("[promethues] updating repo")
+        logger.debug("[prometheus] updating repo")
         update_prometheus_rules_dir(os.path.join(monitoring_rules_dir, env))
         update_prometheus_staticfiles_dir(os.path.join(monitoring_static_file_dir, env))
         update_prometheus_config(monitoring_config_file_path)
-        update_github_prometheus(os.path.join(monitoring_rules_dir, env), os.path.join(monitoring_static_file_dir, env),
-                                monitoring_config_file_path, project_name, env)
+        update_github_prometheus(os.path.join(monitoring_rules_dir, env),
+                                 os.path.join(monitoring_static_file_dir, env),
+                                monitoring_config_file_path,
+                                 project_name,
+                                 env)
     except BaseException:
-        logger.error("[promethues] failed to update prometheus files")
+        logger.error("[prometheus] config file does not exist or failed to update")
 
 
 def update_prometheus_config(prometheus_config_file):
@@ -384,7 +388,7 @@ def update_prometheus_rules_dir(prometheus_rules_dir):
                 pass
             try:
                 # shutil.move(rule_file, rule_file_name)
-                logger.error("[prometheus] renaming %s to  %s", rule_file, rule_file_name)
+                logger.debug("[prometheus] renaming [{}] to [{}]" .format(rule_file, rule_file_name))
                 os.rename(os.path.join(prometheus_rules_dir, rule_file), os.path.join(prometheus_rules_dir, rule_file_name))
                 time.sleep(1)
             except OSError:

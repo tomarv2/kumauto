@@ -2,7 +2,7 @@ import os
 
 from setuptools import find_packages, setup
 
-VERSION = "0.0.1.dev7"
+VERSION = "0.0.1.dev8"
 
 ROOT_PATH = os.path.abspath(os.path.dirname(__file__))
 
