@@ -1,4 +1,4 @@
-# Monitoring Automation project
+# Monitoring Automation project for Prometheus and ecosystem
 
 One of the main problem that we face with microservices deployment is how to add monitoring.
 With deployment being so dynamic its hard to track what to monitor and adjust to changes.
