@@ -10,6 +10,14 @@ from .git_push_prometheus import update_github_prometheus
 
 logger = logging.getLogger(__name__)
 current_values_in_prometheus_config = []
+alert_route_path = '/mnt/monitoring/prometheus/monitoring'
+config_path = '/mnt/monitoring/prometheus/monitoring'
+
+from jinja2 import Environment, FileSystemLoader
+from .config import config
+
+templates_directory = config("TEMPLATES_DIRECTORY")
+prometheus_config = config("PROMETHEUS_CONFIG")
 
 
 # ----------------------------------------------------
@@ -32,10 +40,10 @@ def build_prometheus(config_yaml,
     prometheus_fileloc = monitoring_config_file_path
     prometheus_rules_dir = monitoring_rules_dir
     prometheus_staticfiles_dir = monitoring_static_file_dir
-    logger.debug("[prometheus] file location: {}" .format(prometheus_fileloc))
-    logger.debug("[prometheus] rules dir:  {}" .format(prometheus_rules_dir))
-    logger.debug("[prometheus] static_files dir:  {}" .format(prometheus_staticfiles_dir))
-    logger.debug("[prometheus] user_input_env: {}".format(user_input_env))
+    logger.debug("[prometheus] file location: [{}]" .format(prometheus_fileloc))
+    logger.debug("[prometheus] rules dir: [{}]" .format(prometheus_rules_dir))
+    logger.debug("[prometheus] static files dir: [{}]" .format(prometheus_staticfiles_dir))
+    logger.debug("[prometheus] user input env: [{}]".format(user_input_env))
     logger.debug("[prometheus] verifying if config already exists")
     if not os.path.exists(os.path.join(prometheus_rules_dir, user_input_env)):
         try:
@@ -49,7 +57,7 @@ def build_prometheus(config_yaml,
                 logger.debug('[prometheus] updating config for: %s', user_input_env)
                 prometheus_config(prometheus_fileloc, project_name, user_input_env)
             except:
-                logger.error("[prometheus] unable to update config...")
+                logger.error("[prometheus] unable to update config")
             try:
                 logger.debug("[prometheus] updating rules for:  {}" .format(user_input_env))
                 logger.debug("[prometheus] rules dir:  {}" .format(os.path.join(prometheus_rules_dir, user_input_env)))
@@ -87,9 +95,9 @@ def prometheus_validate_current_setup(prometheus_basefile, project, module, env)
     logger.debug("[prometheus] env name: [{}]" .format(env))
     final_project_name = project + '-' + module
     logger.debug("[prometheus] project to configure: [{}]" .format(final_project_name))
-    logger.debug("[prometheus] prometheus config file: {}" .format(prometheus_basefile))
+    logger.debug("[prometheus] prometheus config file: [{}]" .format(prometheus_basefile))
     with open(prometheus_basefile, 'r') as stream:
-        logger.debug("prometheus_basefile: {}" .format(prometheus_basefile))
+        logger.debug("prometheus basefile: [{}]" .format(prometheus_basefile))
         out = yaml.load(stream, Loader=yaml.Loader)
         try:
             current_values_in_prometheus_config.append(out['scrape_configs'])
@@ -106,12 +114,12 @@ def prometheus_validate_current_setup(prometheus_basefile, project, module, env)
         pass
     try:
         if final_project_name in (str(values)):
-            logger.info("[prometheus] config entry already exists for: %s", project)
+            logger.info("[prometheus] config entry already exists for: {}" .format(project))
         else:
-            logger.info("[prometheus] config entry does not exist for: %s", project)
+            logger.info("[prometheus] config entry does not exist for: {}" .format(project))
             return 0
     except:
-        logger.debug("[prometheus] no matching project found...")
+        logger.debug("[prometheus] no matching project found")
         pass
 
 
@@ -123,16 +131,15 @@ def prometheus_validate_current_setup(prometheus_basefile, project, module, env)
 def prometheus_config(prometheus_fileloc, prj_name, env):
     alert_route = []
     alert_receiver = []
-    logger.debug("In prometheus_config function...")
-    logger.debug("[prometheus] updating prometheus rules section...")
-    logger.debug("[prometheus] taking backup of file...")
+    logger.debug("In prometheus_config function")
+    logger.debug("[prometheus] updating prometheus rules section")
+    logger.debug("[prometheus] taking backup of file")
     copyfile(prometheus_fileloc, prometheus_fileloc + '.bak')
     with open(prometheus_fileloc, "r") as asmr:
         for line in asmr.readlines():
             if "PROMETHEUS RULES FILE LOCATION PATH ABOVE" in line:
                 # we have a match,we want something but we before that...
-                alert_route += '''  - '/mnt/monitoring/prometheus/monitoring/rules/{0}/{1}-blackbox.yaml-updated.yaml'\n'''.format(
-                    env, prj_name)
+                alert_route += '''  - '{0}/rules/{1}/{2}-blackbox.yaml-updated.yaml'\n'''.format(alert_route_path, env, prj_name)
             alert_route += line
     with open(prometheus_fileloc + "-updated.yaml", "w") as asmw:
         asmw.writelines(alert_route)
@@ -140,42 +147,32 @@ def prometheus_config(prometheus_fileloc, prj_name, env):
     time.sleep(1)
 
     logger.info("[prometheus] updating job section")
-    # todo: move to sample file format
-    with open(prometheus_fileloc + "-updated.yaml", "r") as asmr:
-        for line in asmr.readlines():
-            if "PROMETHEUS JOB SECTION ABOVE" in line:
-                # we have a match,we want something but we before that...
-                alert_receiver += '''#################################################################
-  - job_name: '{0}-blackbox'
-    scrape_interval: 60s
-    scrape_timeout: 10s
-    metrics_path: /probe
-    params:
-      module: [http_check]
-    file_sd_configs:
-      - files:
-        - /mnt/monitoring/prometheus/monitoring/static_files/{1}/{0}-blackbox.yaml-updated.yaml
-    relabel_configs:
-      - source_labels: [__address__]
-        regex: (.*)(:80)?
-        target_label: __param_target
-        replacement: {2}
-      - source_labels: [__param_target]
-        regex: (.*)
-        target_label: instance
-        replacement: {2}
-      - source_labels: []
-        regex: .*
-        target_label: __address__
-        replacement: prometheus-blackbox:9115
-      - source_labels: [checker]
-        regex: (.*)
-        target_label: __param_module
-        replacement: '{2}'\n'''.format(prj_name, env, "${1}")
-            alert_receiver += line
-    # write the file with the new content
-    with open(prometheus_fileloc + "-updated.yaml", "w") as asmw:
-        asmw.writelines(alert_receiver)    
+    #
+    # Load Jinja2 template
+    #
+    logger.debug("[prometheus] templates_directory: {}".format(templates_directory))
+    jinja_env = Environment(loader=FileSystemLoader(templates_directory))
+    try:
+        template = jinja_env.get_template('prometheus_config')
+    except:
+        logger.error("[prometheus] error parsing jinja template: {}".format(template))
+    try:
+        with open(prometheus_fileloc + "-updated.yaml", "r") as asmr:
+            logger.debug("[prometheus] file to update: {}" .format(prometheus_fileloc + "-updated.yaml"))
+            for line in asmr.readlines():
+                if "PROMETHEUS JOB SECTION ABOVE" in line:
+                    #
+                    # render template using data
+                    #
+                    alert_receiver += (template.render(name=prj_name, env=env))
+                alert_receiver += line
+    except:
+        logger.debug("[prometheus] unable to open file: {}".format(prometheus_fileloc + "-updated.yaml"))
+    try:
+        with open(prometheus_fileloc + "-updated.yaml", "w") as asmw:
+            asmw.writelines(alert_receiver)
+    except:
+        logger.debug("[prometheus] unable to write to file: {}".format(prometheus_fileloc + "-updated.yaml"))
 
 
 # ---------------------------------------------------
@@ -184,7 +181,7 @@ def prometheus_config(prometheus_fileloc, prj_name, env):
 #
 # ---------------------------------------------------
 def rules_setup(rules_dir, sample_file, project_name, env, project_name_without_env):
-    #current_list_of_projects = []
+    # current_list_of_projects = []
     rules_file_name = os.path.join(rules_dir, project_name) + '-blackbox.yaml' + "-updated.yaml"
     logger.debug("[prometheus] rules_setup function...")
     logger.debug("[prometheus] rules dir: %s", rules_dir)
@@ -248,24 +245,24 @@ def static_files_setup(prometheus_staticfiles_dir, staticfiles_sample_file, proj
     # except BaseException:
     #     logger.error("[prometheus] unable to delete file: %s",project_name)
     #     pass
-    logger.debug("[prometheus] copying sample file from: %s to: %s", staticfiles_sample_file, full_filename)
+    logger.debug("[prometheus] copying sample file from: {} to: {}" .format(staticfiles_sample_file, full_filename))
     try:
-        logger.debug("[prometheus] trying...")
+        logger.debug("[prometheus] copying files")
         if not os.path.exists(os.path.join(prometheus_staticfiles_dir, env)):
             os.makedirs(os.path.join(prometheus_staticfiles_dir, env))
         copyfile(staticfiles_sample_file, full_filename)
     except:
-        logger.error("[prometheus] unable to copy static-file: %s", staticfiles_sample_file)
+        logger.error("[prometheus] unable to copy static-file: {}" .format(staticfiles_sample_file))
         raise SystemExit
     # for (dirpath, dirnames, filenames) in os.walk(os.path.join(prometheus_staticfiles_dir, env)):
     #     current_list_of_projects.extend(filenames)
     #     break
-    logger.debug("[prometheus] trying to open static file...")
+    logger.debug("[prometheus] trying to open static file")
     f = open(full_filename, 'r')
     filedata = f.read()
     f.close()
     # todo: move to sample file format
-    logger.debug("[prometheus] job name: %s", project_name)
+    logger.debug("[prometheus] job name: {}" .format(project_name))
     newdata = filedata.replace("USER_INPUT_PROJECT_NAME", project_name)
 
     f = open(full_filename, 'w')
@@ -332,7 +329,7 @@ def update_targets(prometheus_staticfiles_dir, project_name, end_point, modules,
                         str(x) for x in new_targets))
                 file.write(line)
     except IOError:
-        logger.error("[prometheus] files does not exist: {}" .format(static_file))
+        logger.debug("[prometheus] files does not exist: {}" .format(static_file))
 
 
 # --------------------------------------------------
@@ -340,22 +337,28 @@ def update_targets(prometheus_staticfiles_dir, project_name, end_point, modules,
 # APPLY CHANGES TO NFS/EFS AND GITHUB FOR PROMETHEUS
 #
 # --------------------------------------------------
-def update_prometheus(env, project_name, monitoring_config_file_path, monitoring_rules_dir, monitoring_static_file_dir):
+def update_prometheus(env,
+                      project_name,
+                      monitoring_config_file_path,
+                      monitoring_rules_dir,
+                      monitoring_static_file_dir
+                      ):
     try:
         logger.debug("[prometheus] updating repo")
         update_prometheus_rules_dir(os.path.join(monitoring_rules_dir, env))
         update_prometheus_staticfiles_dir(os.path.join(monitoring_static_file_dir, env))
         update_prometheus_config(monitoring_config_file_path)
-        update_github_prometheus(os.path.join(monitoring_rules_dir, env),
-                                 os.path.join(monitoring_static_file_dir, env),
-                                monitoring_config_file_path,
-                                 project_name,
-                                 env)
+        #update_github_prometheus(os.path.join(monitoring_rules_dir, env),
+                                #  os.path.join(monitoring_static_file_dir, env),
+                                # monitoring_config_file_path,
+                                #  project_name,
+                                #  env)
     except BaseException:
         logger.error("[prometheus] config file does not exist or failed to update")
 
 
 def update_prometheus_config(prometheus_config_file):
+    logger.debug("[prometheus] updating config file")
     if os.path.exists(prometheus_config_file + "-updated.yaml"):
         with open(prometheus_config_file + "-updated.yaml", 'U') as f:
             newContent = f.read()
@@ -374,6 +377,7 @@ def update_prometheus_config(prometheus_config_file):
 
 
 def update_prometheus_rules_dir(prometheus_rules_dir):
+    logger.debug("[prometheus] rules dir: {}" .format(prometheus_rules_dir))
     files = os.listdir(prometheus_rules_dir)
     for rule_file in files:
         if "-updated.yaml" in rule_file:
@@ -399,6 +403,7 @@ def update_prometheus_rules_dir(prometheus_rules_dir):
 
 
 def update_prometheus_staticfiles_dir(prometheus_staticfiles_dir):
+    logger.debug("[prometheus] update static files dir")
     files = os.listdir(prometheus_staticfiles_dir)
     for static_file in files:
         if "-updated.yaml" in static_file:

@@ -1,0 +1,23 @@
+es_host: {{ host }}
+es_port: 9200
+name: {{ env_prj_name }}
+type: any
+index: {{ index }}
+num_events: 1
+filter:
+- query:
+    query_string:
+      query: {{ ea_query }}
+alert:
+{%if pagerduty_service_key is defined -%}
+#- "pagerduty"
+#alert_subject: "{{ env }} - Pipeline: {{ project_name }} - Type: Application({{ application }})"
+#pagerduty_service_key: {{ pagerduty_serice_key }}
+#pagerduty_client_name: {{ pagerduty_client_name }}
+{% endif %}
+{%- if email_to is defined -%}
+- "email"
+email:
+- "{{ email_to }}"
+{% endif %}
+###################### ELASTALERT RULES GO ABOVE ######################

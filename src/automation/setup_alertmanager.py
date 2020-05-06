@@ -7,8 +7,12 @@ import ruamel.yaml as yaml
 import logging
 from automation.base.base_function import *
 from .git_push_prometheus import update_github_alertmanager
-# Imports from Jinja2
 from jinja2 import Environment, FileSystemLoader
+from .config import config
+
+templates_directory = config("TEMPLATES_DIRECTORY")
+reciever_notification = config("RECIEVER_NOTIFICATION")
+route_notification = config("ROUTE_NOTIFICATION")
 
 logger = logging.getLogger(__name__)
 current_values_in_alertmanager = []
@@ -30,7 +34,7 @@ def build_alertmanager(user_input_env,
     logger.debug("inside build_alertmanager function")
     alertmanager_fileloc = alertmanager_config_file_path
     try:
-        logger.info('[alertmanager] configuring monitoring for1: {}'.format(project_name))
+        logger.info('[alertmanager] configuring monitoring: {}'.format(project_name))
         if alertmanager_validate_current_setup(alertmanager_fileloc, project_name, user_input_env) == 0:
             logger.info('[alertmanager] configuring monitoring for: {}' .format(project_name))
             alertmanager_create_new_entry(alertmanager_fileloc,
@@ -42,7 +46,7 @@ def build_alertmanager(user_input_env,
                                           convert_list_to_slack_channel(slack_channel),
                                           pagerduty_service_key_id)
         else:
-            logger.info("[alertmanager] config already exists. Updating contact information: {}" .format(user_input_env))
+            logger.info("[alertmanager] config already exists, updating contact information: {}" .format(user_input_env))
             alertmanager_replace_existing_entry(alertmanager_fileloc,
                                                 project_name,
                                                 convert_list_to_str(tools),
@@ -108,11 +112,11 @@ def alertmanager_create_new_entry(alertmanager_file,
                                   to_email_list,
                                   slack_channel,
                                   pagerduty_service_key_id):
-    logger.debug("inside alertmanager_create_new_entry")
+    logger.debug("inside [alertmanager_create_new_entry function]")
     if 'alertmanager' in tools:
         logger.debug("[alertmanager] to_email_list: {}" .format(to_email_list))
         logger.debug("[alertmanager] taking backup of file")
-        logger.debug("[alertmanager] file name: {}" .format(alertmanager_file))
+        logger.debug("[alertmanager] file name: [{}]" .format(alertmanager_file))
         copyfile(alertmanager_file, alertmanager_file + '.bak')
         logger.debug("[alertmanager] updating alert rules section")
         # if 'aws' in env:
@@ -132,33 +136,73 @@ def setup_new_alertmanager(alertmanager_file,
                       to_email_list,
                       slack_channel,
                       pagerduty_service_key_id):
-    logger.debug("inside prod_alertmanager")
+    logger.debug("[alertmanager] inside setup_new_alertmanager")
     alert_route = []
     alert_receiver = []
-    with open(alertmanager_file, "r") as asmr:
-        for line in asmr.readlines():
-            if "ALERT_ROUTES ABOVE" in line:
-                # we have a match,we want something but we before that...
-                alert_route += '''
-    - receiver: '{0}-team'
-      match:
-        service: {0}-{1}\n'''.format(prj_name, modules)
-            alert_route += line
+    #
+    # Load Jinja2 template
+    #
+    jinja_env = Environment(loader=FileSystemLoader(templates_directory))
+    logger.debug("[alertmanager] template dir: {}" .format(templates_directory))
+    template = jinja_env.get_template('am_route_notification')
+    try:
+        logger.debug("[alertmanager] opening file")
+        with open(alertmanager_file, "r") as asmr:
+            for line in asmr.readlines():
+                if "ALERT_ROUTES ABOVE" in line:
+                    try:
+                        alert_route += (template.render(name=prj_name, module=modules))
+                    except:
+                        logger.debug("unable to render")
+                alert_route += line
+    except:
+        logger.error("unable to open file")
+    #
+    # write the file
+    #
+    logger.debug("[alertmanager] writing to file {}" .format(alertmanager_file + "-updated.yaml"))
     with open(alertmanager_file + "-updated.yaml", "w") as asmw:
         asmw.writelines(alert_route)
     # os.rename(alertmanager_file + "-updated.yaml", alertmanager_file)
     logger.debug("[alertmanager] updating alert receivers section")
+    #
     # Load Jinja2 template
-    jinja_env = Environment(loader=FileSystemLoader('/Users/varun.tomar/Documents/personal_github/mauto/src/automation/templates'))
-    template = jinja_env.get_template('reciever_notification')
-    with open(alertmanager_file + "-updated.yaml", "r") as asmr:
-        for line in asmr.readlines():
-            if "ALERT_RECEIVERS ABOVE" in line:
-                # Render template using data and print the output
-                alert_receiver += (template.render(name=prj_name, env=env, email_to=to_email_list, smarthost_details='smtp.gmail.com:587', slack_channel=slack_channel, slack_api_url='https://hooks.slack.com/services/T12345/T12345/T12345')).format(prj_name, env, to_email_list, slack_channel, pagerduty_service_key_id)
+    #
+    jinja_env = Environment(loader=FileSystemLoader(templates_directory))
+    reciever_template = jinja_env.get_template('am_reciever_notification')
+    try:
+        with open(alertmanager_file + "-updated.yaml", "r") as asmr:
+            logger.debug("[alertmanager] inside file: {}" .format(alertmanager_file + "-updated.yaml"))
+            for line in asmr.readlines():
+                if "ALERT_RECEIVERS ABOVE" in line:
+                    try:
+                        logger.debug("rendering template")
+                        #
+                        # render template using data
+                        #
+                        logger.debug("checking output: {}\n{}\n{}\n{}\n{}" .format(prj_name,
+                                                    env,
+                                                    to_email_list,
+                                                    'slack_channel',
+                                                    pagerduty_service_key_id))
+                        alert_receiver += (reciever_template.render(name=prj_name,
+                                                                    env=env,
+                                                                    email_to=to_email_list,
+                                                                    smarthost_details='smtp.gmail.com:587',
+                                                                    slack_channel=slack_channel,
+                                                                    slack_api_url='https://hooks.slack.com/services/T12345',
+                                                                    pagerduty_service_key=pagerduty_service_key_id
+                                                                    ))
+                    except:
+                        logger.debug("issue rendering template")
                 alert_receiver += line
+    except:
+        logger.error("unable to open file: {}" .format(alertmanager_file + '-updated.yaml'))
+    #
     # write the file with the new content
-    with open(alertmanager_file + "-updated.yaml", "a") as asmw:
+    #
+    logger.debug("[alertmanager] printing file {}" .format(''.join(alert_receiver)))
+    with open(alertmanager_file + "-updated.yaml", "w") as asmw:
         asmw.writelines(alert_receiver)
 
 

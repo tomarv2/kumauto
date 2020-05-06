@@ -1,0 +1,4 @@
+    - receiver: '{{ name }}-team'
+      match:
+        service: {{ name }}-{{ module }}
+

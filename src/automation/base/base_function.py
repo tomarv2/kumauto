@@ -4,9 +4,9 @@ import hashlib, time
 import logging
 from staticconf.loader import yaml_loader
 from kazoo.client import KazooClient
-client = docker.from_env()
 import ruamel.yaml as yaml
 
+client = docker.from_env()
 logger = logging.getLogger(__name__)
 
 

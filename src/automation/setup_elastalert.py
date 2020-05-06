@@ -5,12 +5,16 @@ import ruamel.yaml as yaml
 import logging
 from automation.base.base_function import *
 from .git_push_elastalert import update_github_elastalert
+from jinja2 import Environment, FileSystemLoader
 from .config import config
+
+config_yaml = config("CONFIG_YAML_FILE")
+templates_directory = config("TEMPLATES_DIRECTORY")
+ea_rules = config("EA_RULES")
 
 logger = logging.getLogger(__name__)
 current_list_of_projects = []
 current_values_in_elastalert_rules = []
-config_yaml = config("CONFIG_YAML_FILE")
 
 
 # ----------------------------------------------
@@ -65,7 +69,7 @@ def elastalert_rules_setup(elastalert_rules_dir,
                            application,
                            elasticsearch_hostname
                            ):
-    logger.debug("Inside elastalert_rules function")
+    logger.debug("[elastalert] Inside elastalert_rules function")
     logger.debug("[elastalert] Rules directory: {}" .format(elastalert_rules_dir))
     logger.debug("[elastalert] Sample file: {}" .format(sample_file))
     logger.debug("[elastalert] Project Name: {}" .format(project_name))
@@ -79,23 +83,22 @@ def elastalert_rules_setup(elastalert_rules_dir,
     logger.debug("[elastalert] Application: {}" .format(application))
     logger.debug("[elastalert] taking backup of file")
     if os.path.exists(config_yaml):
-        logger.debug("file does exists: {}" .format(config_yaml))
+        logger.debug("[elastalert] config file exists: {}" .format(config_yaml))
     else:
-        logger.debug("file does not exist: {}".format(config_yaml))
+        logger.debug("[elastalert] file does not exist: {}".format(config_yaml))
     with open(config_yaml, 'r') as stream:
         out_config = yaml.load(stream, Loader=yaml.Loader)
         temporary_ea_rules = ''.join(out_config['elastalert']['temporary_ea_rules'])
-        logger.debug("temporary_ea_rules: {}" .format(temporary_ea_rules))
-        logger.debug("temporary EA rules: {}".format(temporary_ea_rules))
+        logger.debug("[elastalert] temporary EA rules: {}" .format(temporary_ea_rules))
 
     ea_rules_file = os.path.join(temporary_ea_rules, env, project_name + '.yaml')
     try:
-        logger.debug("checking if directory exists")
+        logger.debug("[elastalert] checking if directory exists")
         ensure_dir_exists(os.path.join(temporary_ea_rules, env))
         ensure_dir_exists(os.path.join(elastalert_rules_dir, env))
         logger.debug("[elastalert] copying sample file")
         logger.debug("[elastalert] sample_file: {}" .format(sample_file))
-        logger.debug("[elastalert] ea rules file: {}" .format(ea_rules_file))
+        logger.debug("[elastalert] EA rules file: {}" .format(ea_rules_file))
         try:
             copyfile(sample_file, ea_rules_file)
         except:
@@ -106,68 +109,46 @@ def elastalert_rules_setup(elastalert_rules_dir,
         copyfile(sample_file, ea_rules_file)
     logger.debug("[elastalert] updating elastalert rules section")
     elastalert_rules = []
-    if env in ['aws-qa', 'aws-stg']:
+    #
+    # Load Jinja2 template
+    #
+    jinja_env = Environment(loader=FileSystemLoader(templates_directory))
+    try:
+        template = jinja_env.get_template(ea_rules)
+    except:
+        logger.error("[elastalert] error parsing jinja template: {}" .format(template))
+    try:
         with open(sample_file, "r") as asmr:
             for line in asmr.readlines():
                 if "ELASTALERT RULES GO ABOVE" in line:
-                    # we have a match,we want something but we before that...
-                    elastalert_rules += '''es_host: {0}
-es_port: 9200
-name: {1}
-type: any
-index: {2}
-num_events: 1
-filter:
-- query:
-    query_string:
-      query: {3}
-alert:
-- "{4}"
-email:
- - "{5}"
-alert_subject:  "{6} Project: {8} Type:Application({7})"\n'''. format(elasticsearch_hostname,
-                                                                      env + '-' + project_name,
-                                                                      index,
-                                                                      ea_query,
-                                                                      alert_type,
-                                                                      email_to,
-                                                                      env.upper(),
-                                                                      application,
-                                                                      project_name)
-                elastalert_rules += line
+                    #
+                    # render template using data
+                    #
+                    elastalert_rules += (template.render(host=elasticsearch_hostname,
+                                                         env_prj_name=env + '-' + project_name,
+                                                         index=index,
+                                                         ea_query=ea_query,
+                                                         alert_type=alert_type,
+                                                         pagerduty_service_key=pagerduty_service_key_id,
+                                                         pagerduty_client_name=pagerduty_client_name,
+                                                         email_to=email_to,
+                                                         env=env.upper(),
+                                                         application=application,
+                                                         project_name=project_name
+                                                         ))
+                # elastalert_rules += line
+    except:
+        logger.debug("[elastalert] unable to open file: {}" .format(sample_file))
+    try:
         with open(ea_rules_file, "w") as asmw:
             asmw.writelines(elastalert_rules)
-
-    else:
-        with open(sample_file, "r") as asmr:
-            for line in asmr.readlines():
-                if "ELASTALERT RULES GO ABOVE" in line:
-                    # we have a match,we want something but we before that...
-                    elastalert_rules += '''es_host: {0}
-es_port: 9200
-name: {1}
-type: any
-index: {2}
-num_events: 1
-filter:
-- query:
-    query_string:
-      query: {3}
-alert:
-- "{4}"
-alert_subject:  "{7} - Pipeline: {9} - Type: Application({8})"
-pagerduty_service_key: {5}
-pagerduty_client_name: {6}\n'''. format(elasticsearch_hostname, env + '-' + project_name, index, ea_query,
-                                        alert_type, pagerduty_service_key_id, pagerduty_client_name, env.upper(),
-                                        application, project_name)
-                elastalert_rules += line
-        with open(ea_rules_file, "w") as asmw:
-            asmw.writelines(elastalert_rules)
+    except:
+        logger.debug("[elastalert] unable to write to file: {}" .format(ea_rules_file))
 
 
 # -------------------------------------------------------
 #
-# APPLY CHANGES TO NFS/EFS AND GITHUB FOR  ELASTALERT
+# APPLY CHANGES TO EFS AND GITHUB FOR  ELASTALERT
 #
 # -------------------------------------------------------
 def update_elastalert(env, project_name, elastalert_rules_dir):
@@ -195,27 +176,4 @@ def update_elastalert_rules_dir(elastalert_rules_dir, env):
                                                     os.path.join(elastalert_rules_dir, env, ea_rule_file)))
     except BaseException:
         logger.error("copying elastalert rules failed")
-
-
-# current values in elastalert
-# def elastalert_validate_current_setup(elastalert_rulesdir, project, module):
-#     logger.error("[elastalert] validating if alert is prexisting...")
-#     logger.error("reading file: %s", elastalert_rulesdir)
-#     logger.error("[elastalert] currently configured projects: %s", project)
-#     with open(elastalert_rulesdir, 'r') as stream:
-#         out = yaml.load(stream)
-#         try:
-#             current_values_in_elastalert_rules.append(out['scrape_configs'])
-#         except:
-#             logger.error("[elastalert] unable to get list of currently monitored projects, exiting...")
-#             raise SystemExit
-#     values = []
-#     for i in [x for x in current_values_in_elastalert_rules]:
-#         for j in i:
-#             values.append(j)
-#     if project + '-' + module in (str(values)):
-#         logger.error("[elastalert] config entry already exists for: %s", project)
-#     else:
-#         logger.error("[elastalert] config entry does not exist for: %s", project)
-#         return 0
 

@@ -9,8 +9,12 @@ filter:
     query_string:
       query: "NA_ELASTALERT"
 alert:
-- "pagerduty"
-alert_subject:  "AWS - Pipeline: aws-testrepo-service - Type: Application(service)"
-pagerduty_service_key: 123abc
-pagerduty_client_name: elastalert
+#- "pagerduty"
+#alert_subject: "AWS - Pipeline: aws-testrepo-service - Type: Application(service)"
+#pagerduty_service_key: 
+#pagerduty_client_name: elastalert
+- "email"
+email:
+- "test-email@demo.com"
+
 ###################### ELASTALERT RULES GO ABOVE ######################
