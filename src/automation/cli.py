@@ -1,13 +1,11 @@
-import logging
-
-from .parse_inputs import ParseInputs
-from .setup_prometheus import build_prometheus, update_prometheus
-from .setup_alertmanager import build_alertmanager, update_alertmanager
-from .setup_elastalert import build_elastalert, update_elastalert
 from .logging import configure_logging
-from automation.base.base_function import *
 from .validation import *
 from .config import config
+import click
+from tabulate import tabulate
+from automation.plugins.am_setup.am import am_config
+from automation.plugins.prometheus_setup.pm import pm_config
+from automation.plugins.ea_setup.ea import ea_config
 
 config_yaml = config("CONFIG_YAML_FILE")
 requirements_yaml = config("REQUIREMENTS_YAML_FILE")
@@ -15,22 +13,94 @@ user_input_env = config("USER_INPUT_ENV")
 logger = logging.getLogger(__name__)
 
 
-def configure_logging_cli():
-    """Command-line interface to Dispatch."""
-    logger.debug("configuring logging")
+@click.group()
+def automation_cli():
+    """Command-line interface to mauto."""
     configure_logging()
 
+# ----
+@automation_cli.group("develop")
+def develop_product():
+    """Develop components"""
+    pass
 
-def entrypoint():
-    configure_logging_cli()
-    user_input_env_lower = user_input_env.lower()
-    logger.debug("Checking the format of yaml file")
-    parser = ParseInputs()
-    logger.debug('config file: {}' .format(config_yaml))
-    parser.parse_user_config_yaml(requirements_yaml, config_yaml, user_input_env_lower)
-    os.environ["TEST_ALERTMANAGER"] = "1"
-    os.environ["TEST_PROMETHEUS"] = "1"
-    os.environ["TEST_ELASTALERT"] = "1"
+
+@develop_product.command("alertmanager")
+def develop_am():
+    """develop component: alertmanager"""
+    am_config()
+
+
+@develop_product.command("prometheus")
+def develop_pm():
+    """develop component: prometheus monitoring (monitoring , blackbox)"""
+    pm_config()
+
+
+@develop_product.command("elastalert")
+def develop_ea():
+    """develop component: elastalert"""
+    ea_config()
+
+
+@develop_product.command('git')
+def develop_git():
+    """develop component: push to git"""
+
+
+# ----
+@automation_cli.group("components")
+def components_group():
+    """All commands for component manipulation."""
+    pass
+
+
+@components_group.command("list")
+def list_available_components():
+    """Shows all available components"""
+    table = [['am', '0.1', 'demo', 'demo']]
+    # for p in plugins.all():
+    #     table.append([p.title, p.slug, p.version, p.type, p.author, p.description])
+    click.secho(
+        tabulate(table, headers=["Component", "Version", "Author", "Description"]),
+        fg="blue",
+    )
+
+
+# -----
+@automation_cli.group("remove")
+def project_cleanup():
+    """Command to remove project"""
+    pass
+
+
+@project_cleanup.command("all", help="all components")
+def remove_all_projects():
+    """testing"""
+
+
+@project_cleanup.command("one-component", help="remove one component")
+def remove_one_project():
+    """testing"""
+
+# -----
+@automation_cli.group("deploy")
+def all_components():
+    """Deploy components: (alertmanager, prometheus, blackbox)"""
+    pass
+
+
+@all_components.command("dryrun", help="no changes are implemented")
+def validate_project():
+    """testing"""
+
+
+@all_components.command("all", help="deploy everything")
+def test():
+    entrypoint_to_all()
+
+
+def entrypoint_to_all():
     # ----------------------------------------------------
     #
     # Build files entered by user:
@@ -39,104 +109,17 @@ def entrypoint():
     #
     # ----------------------------------------------------
     if validate_yaml(requirements_yaml) and validate_yaml(config_yaml):
-        # ----------------------------------------------------
-        #
-        # Build the new files
-        #
-        # ----------------------------------------------------
-        logger.debug("User Input: Env [{}]" .format(user_input_env_lower))
-        logger.debug("User Input: Project name [{}]" .format(parser.project_name))
-        logger.debug("User Input: alertmanager config file_path [{}]" .format(parser.alertmanager_config_file_path))
-        build_alertmanager(user_input_env_lower,
-                           parser.project_name,
-                           parser.alertmanager_config_file_path,
-                           parser.modules,
-                           parser.tools,
-                           parser.email_to,
-                           parser.slack_channel,
-                           parser.pagerduty_service_key_id)
-        os.environ["TEST_ALERTMANAGER"] = "0"
-        build_prometheus(config_yaml,
-                         user_input_env_lower,
-                         parser.monitoring_config_file_path,
-                         parser.monitoring_rules_dir,
-                         parser.monitoring_static_file_dir,
-                         parser.project_name,
-                         parser.targets_to_monitor,
-                         parser.monitoring_rules_sample_file,
-                         parser.monitoring_static_file_sample_file,
-                         parser.modules,
-                         parser.project_name_without_env)
-        os.environ["TEST_PROMETHEUS"] = "0"
-        build_elastalert(user_input_env_lower,
-                         parser.project_name,
-                         parser.elastalert_rules_dir,
-                         parser.namespace,
-                         parser.ea_query,
-                         parser.elastalert_sample_file,
-                         parser.elasticsearch_hostname,
-                         parser.email_to,
-                         parser.pagerduty_service_key_id,
-                         parser.pagerduty_client_name)
-        os.environ["TEST_ELASTALERT"] = "0"
-    else:
-        logger.error("yaml files validation didn't pass")
-        os.environ["TEST_ALERTMANAGER"] = "1"
-        os.environ["TEST_PROMETHEUS"] = "1"
-        os.environ["TEST_ELASTALERT"] = "1"
-    # -------------------------------------------------------------------------
-    #
-    # Test the new files
-    #
-    # -------------------------------------------------------------------------
-    if os.environ["TEST_ALERTMANAGER"] == "0":
-        logger.debug("TESTING ALERTMANAGER")
-        if validate_alartmanager_config(parser.alertmanager_config_file_path):
-            os.environ["TEST_ALERTMANAGER"] = "0"
-        else:
-            os.environ["TEST_ALERTMANAGER"] = "1"
-            logger.debug("ALERTMANAGER validation didn't pass")
+        am_config()
+        pm_config()
+        ea_config()
 
-    if os.environ["TEST_PROMETHEUS"] == "0":
-        logger.debug("TESTING PROMETHEUS")
-        if validate_prometheus_config(parser.monitoring_config_file_path) and \
-                validate_prometheus_rules(parser.monitoring_rules_dir) and \
-                validate_prometheus_static_files(parser.monitoring_static_file_dir):
-            os.environ["TEST_PROMETHEUS"] = "0"
-        else:
-            os.environ["TEST_PROMETHEUS"] = "1"
-            logger.debug("PROMETHEUS validation didn't pass...")
 
-    if os.environ["TEST_ELASTALERT"] == "0":
-        logger.debug("TESTING ELASTALERT")
-        if validate_elastalert_rules(parser.temporary_ea_rules, user_input_env_lower):
-            os.environ["TEST_ELASTALERT"] = "0"
-        else:
-            os.environ["TEST_ELASTALERT"] = "1"
-            logger.debug("ELASTALERT validation didn't pass...")
-
-    # -------------------------------------------------------------------------
-    #
-    # Push the new files
-    #
-    # -------------------------------------------------------------------------  
-    if os.environ["TEST_ALERTMANAGER"] == "0":
-        update_alertmanager(user_input_env_lower, parser.project_name, parser.alertmanager_config_file_path)
-    if os.environ["TEST_PROMETHEUS"] == "0": 
-        update_prometheus(user_input_env_lower, parser.project_name, parser.monitoring_config_file_path,
-                          parser.monitoring_rules_dir, parser.monitoring_static_file_dir)
-    if os.environ["TEST_ELASTALERT"] == "0":
-        update_elastalert(user_input_env_lower, parser.project_name, parser.elastalert_rules_dir)
-
-    # -------------------------------------------------------------------------
-    #
-    # Cleanup temporary files
-    #
-    # -------------------------------------------------------------------------  
-    cleanup(parser.monitoring_rules_dir,
-            parser.monitoring_static_file_dir,
-            parser.monitoring_config_file_path,
-            parser.alertmanager_config_file_path)
+def entrypoint():
+    """The entry that the CLI is executed from"""
+    try:
+        automation_cli()
+    except Exception as e:
+        click.secho(f"ERROR: {e}", bold=True, fg="red")
 
 
 if __name__ == "__main__":

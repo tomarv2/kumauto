@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 config_yaml = config("CONFIG_YAML_FILE")
 requirements_yaml = config("REQUIREMENTS_YAML_FILE")
 
+
 def main():
     logger.error("Checking the format of yaml file")
     print("validating yaml files...")
