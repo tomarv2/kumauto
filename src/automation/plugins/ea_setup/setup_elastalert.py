@@ -6,7 +6,7 @@ import logging
 from automation.base.base_function import *
 from .git_push_elastalert import update_github_elastalert
 from jinja2 import Environment, FileSystemLoader
-from .config import config
+from automation.config import config
 
 config_yaml = config("CONFIG_YAML_FILE")
 templates_directory = config("TEMPLATES_DIRECTORY")
