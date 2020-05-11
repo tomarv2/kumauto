@@ -1,15 +1,12 @@
-# Monitoring Automation project for Prometheus and ecosystem
+# Monitoring automation project for Prometheus and ecosystem (in-progress)
 
-One of the main problem that we face with microservices deployment is how to add monitoring.
-With deployment being so dynamic its hard to track what to monitor and adjust to changes.
+One of the main problem that we face with microservices deployment is how to configure monitoring.
+With deployment being so dynamic its hard to make changes.
 
-In this project we are trying to offload the management of monitoring. When a new project is to added, 
-user just needs to update the `user_input.yaml` and it will be picked up by CICD (in our case Jenkins).
+In this project we are trying to offload the management of monitoring. When a new project is added, 
+user adds `user_input.yaml` and it will be picked up by CICD (in our case Jenkins).
 
-If a project needs to add a pagerduty information or update the contact person for a project, 
-they can ust update the user information and it be taken car of by CICD.
-
-Where we can add Project to:
+Where will the monitoring be configured:
 
 - Prometheus
 - Blackbox

@@ -1,9 +1,9 @@
-import shutil, os, sys
+import shutil
 from automation.base.base_function import *
 from automation.base.git_actions import *
-import yaml
+import ruamel.yaml as yaml
 import logging
-from .config import config
+from automation.config import config
 
 config_yaml = config("CONFIG_YAML_FILE")
 logger = logging.getLogger(__name__)

@@ -1,21 +1,15 @@
-import os
 import re
-import time
 import ruamel.yaml as yaml
-import logging
 import in_place
 from shutil import copyfile
 from automation.base.base_function import *
-from .git_push_prometheus import update_github_prometheus
+from jinja2 import Environment, FileSystemLoader
+from automation.config import config
 
 logger = logging.getLogger(__name__)
 current_values_in_prometheus_config = []
 alert_route_path = '/mnt/monitoring/prometheus/monitoring'
 config_path = '/mnt/monitoring/prometheus/monitoring'
-
-from jinja2 import Environment, FileSystemLoader
-from .config import config
-
 templates_directory = config("TEMPLATES_DIRECTORY")
 prometheus_config = config("PROMETHEUS_CONFIG")
 

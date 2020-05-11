@@ -1,14 +1,12 @@
 from shutil import copyfile
-import os
 import sys
 import fileinput
 import re
 import ruamel.yaml as yaml
-import logging
 from automation.base.base_function import *
-from .git_push_prometheus import update_github_alertmanager
+from automation.plugins.prometheus_setup.git_push_prometheus import update_github_alertmanager
 from jinja2 import Environment, FileSystemLoader
-from .config import config
+from automation.config import config
 
 templates_directory = config("TEMPLATES_DIRECTORY")
 reciever_notification = config("RECIEVER_NOTIFICATION")

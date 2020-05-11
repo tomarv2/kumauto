@@ -1,9 +1,9 @@
-import shutil, os, sys
+import shutil
 from automation.base.git_actions import *
 from automation.base.base_function import *
 import yaml
 import logging
-from .config import config
+from automation.config import config
 
 logger = logging.getLogger(__name__)
 config_yaml = config("CONFIG_YAML_FILE")
