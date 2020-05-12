@@ -1,24 +1,28 @@
+import logging
+import os
 from automation.parse_inputs import ParseInputs
-from .setup_prometheus import build_prometheus, update_prometheus
+from .setup import build_prometheus, update_prometheus
 from automation.base.base_function import *
 from automation.validation import *
-from automation.config import config
 
-config_yaml = config("CONFIG_YAML_FILE")
-requirements_yaml = config("REQUIREMENTS_YAML_FILE")
-user_input_env = config("USER_INPUT_ENV")
+from .config import (
+    CONFIG_YAML_FILE,
+    REQUIREMENTS_YAML_FILE,
+    USER_INPUT_ENV
+)
+
 logger = logging.getLogger(__name__)
 
 
 def pm_config():
-    if validate_yaml(requirements_yaml) and validate_yaml(config_yaml):
-        user_input_env_lower = user_input_env.lower()
+    if validate_yaml(REQUIREMENTS_YAML_FILE) and validate_yaml(CONFIG_YAML_FILE):
+        user_input_env_lower = USER_INPUT_ENV.lower()
         logger.debug("Checking the format of yaml file")
         parser = ParseInputs()
-        logger.debug('config file: {}' .format(config_yaml))
-        parser.parse_user_config_yaml(requirements_yaml, config_yaml, user_input_env_lower)
+        logger.debug('config file: {}' .format(CONFIG_YAML_FILE))
+        parser.parse_user_config_yaml(REQUIREMENTS_YAML_FILE, CONFIG_YAML_FILE, user_input_env_lower)
         os.environ["TEST_PROMETHEUS"] = "1"
-        build_prometheus(config_yaml,
+        build_prometheus(CONFIG_YAML_FILE,
                          user_input_env_lower,
                          parser.monitoring_config_file_path,
                          parser.monitoring_rules_dir,

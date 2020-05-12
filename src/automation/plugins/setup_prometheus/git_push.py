@@ -3,9 +3,10 @@ from automation.base.base_function import *
 from automation.base.git_actions import *
 import ruamel.yaml as yaml
 import logging
-from automation.config import config
+from .config import (
+    CONFIG_YAML_FILE
+)
 
-config_yaml = config("CONFIG_YAML_FILE")
 logger = logging.getLogger(__name__)
 
 
@@ -19,7 +20,7 @@ def update_github_prometheus(prometheus_rules_dir,
     #
     #
     return True
-    with open(config_yaml, 'r') as stream_config:
+    with open(CONFIG_YAML_FILE, 'r') as stream_config:
         out_config = yaml.load(stream_config)
         ssh_key_path = out_config['ssh_key_path'][0]
         branch = out_config['branch'][0]
@@ -186,7 +187,7 @@ def update_github_alertmanager(alertmanager_config_file, project_name, env):
     #
     # parse config file
     #
-    with open(config_yaml, 'r') as stream_config:
+    with open(CONFIG_YAML_FILE, 'r') as stream_config:
             out_config = yaml.load(stream_config)
             ssh_key_path = out_config['ssh_key_path'][0]
             branch = out_config['branch'][0]

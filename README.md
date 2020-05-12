@@ -16,10 +16,7 @@ Where will the monitoring be configured:
 - Email
 - Slack
 
-
-**How to use this:**
-
-Pre-reqs:
+**Pre-reqs:**
 
  - Running Elastalert
  - Running Alertmanager
@@ -59,3 +56,17 @@ verify if prometheus config file exists:
 mkdir -p $BASE_PATH/mauto/junk/demo-data/monitoring/
 cp $BASE_PATH/mauto/data/demo-data/monitoring/config.yaml $BASE_PATH/mauto/junk/demo-data/monitoring/
 ```
+
+### How to use?
+
+- run `pip install mauto`
+- run `muato` for available options
+
+### Note: 
+
+1. Trying to make it modular or plug and play type so new components can be added easily.
+
+2. I am using `click` to create python cli.
+
+3. Python 3.6 and above is required
+

@@ -2,16 +2,16 @@ import shutil
 import yaml
 import os
 import logging
-
 from base.git_actions import *
 from base.base_function import *
+from .config import (
+    CONFIG_YAML_FILE
+)
 
 logger = logging.getLogger(__name__)
 
-from automation.config import config
-config_yaml = config("CONFIG_YAML_FILE")
 
-with open(config_yaml, 'r') as stream_config:
+with open(CONFIG_YAML_FILE, 'r') as stream_config:
     out_config = yaml.load(stream_config)
     env_list = out_config['env']
     ssh_key_path = out_config['ssh_key_path'][0]

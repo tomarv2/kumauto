@@ -292,9 +292,7 @@ scrape_configs:
     - targets:
       - 'es-exporter:9114'
 #################################################################
-#################################################################
-
-######################################################## PROMETHEUS JOB SECTION ABOVE ####################
+################## PROMETHEUS JOB SECTION ABOVE ####################
 # Rule files specifies a list of globs. Rules and alerts are read from
 # all matching files.
 rule_files:

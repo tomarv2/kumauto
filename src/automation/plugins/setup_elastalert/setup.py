@@ -4,13 +4,13 @@ import os
 import ruamel.yaml as yaml
 import logging
 from automation.base.base_function import *
-from .git_push_elastalert import update_github_elastalert
+from .git_push import update_github_elastalert
 from jinja2 import Environment, FileSystemLoader
-from automation.config import config
-
-config_yaml = config("CONFIG_YAML_FILE")
-templates_directory = config("TEMPLATES_DIRECTORY")
-ea_rules = config("EA_RULES")
+from .config import (
+    CONFIG_YAML_FILE,
+    TEMPLATES_DIRECTORY,
+    EA_RULES
+)
 
 logger = logging.getLogger(__name__)
 current_list_of_projects = []
@@ -82,11 +82,11 @@ def elastalert_rules_setup(elastalert_rules_dir,
     logger.debug("[elastalert] Env: {}" .format(env))
     logger.debug("[elastalert] Application: {}" .format(application))
     logger.debug("[elastalert] taking backup of file")
-    if os.path.exists(config_yaml):
-        logger.debug("[elastalert] config file exists: {}" .format(config_yaml))
+    if os.path.exists(CONFIG_YAML_FILE):
+        logger.debug("[elastalert] config file exists: {}" .format(CONFIG_YAML_FILE))
     else:
-        logger.debug("[elastalert] file does not exist: {}".format(config_yaml))
-    with open(config_yaml, 'r') as stream:
+        logger.debug("[elastalert] file does not exist: {}".format(CONFIG_YAML_FILE))
+    with open(CONFIG_YAML_FILE, 'r') as stream:
         out_config = yaml.load(stream, Loader=yaml.Loader)
         temporary_ea_rules = ''.join(out_config['elastalert']['temporary_ea_rules'])
         logger.debug("[elastalert] temporary EA rules: {}" .format(temporary_ea_rules))
@@ -112,9 +112,9 @@ def elastalert_rules_setup(elastalert_rules_dir,
     #
     # Load Jinja2 template
     #
-    jinja_env = Environment(loader=FileSystemLoader(templates_directory))
+    jinja_env = Environment(loader=FileSystemLoader(TEMPLATES_DIRECTORY))
     try:
-        template = jinja_env.get_template(ea_rules)
+        template = jinja_env.get_template(EA_RULES)
     except:
         logger.error("[elastalert] error parsing jinja template: {}" .format(template))
     try:
@@ -161,7 +161,7 @@ def update_elastalert(env, project_name, elastalert_rules_dir):
 
 
 def update_elastalert_rules_dir(elastalert_rules_dir, env):
-    with open(config_yaml, 'r') as stream_config:
+    with open(CONFIG_YAML_FILE, 'r') as stream_config:
         out_config = yaml.load(stream_config, Loader=yaml.Loader)
         temporary_ea_rules = out_config['elastalert']['temporary_ea_rules'][0]
     files = os.listdir(os.path.join(temporary_ea_rules, env))
