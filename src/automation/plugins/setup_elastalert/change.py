@@ -2,15 +2,16 @@ import shutil
 import os
 import yaml
 import logging
-from automation.config import config
-
 from base.git_actions import *
 from base.base_function import *
+from .config import (
+    CONFIG_YAML_FILE
+)
 
 logger = logging.getLogger(__name__)
-config_yaml = config("CONFIG_YAML_FILE")
 
-with open(config_yaml, 'r') as stream_config:
+
+with open(CONFIG_YAML_FILE, 'r') as stream_config:
     out_config = yaml.load(stream_config)
     env_list = out_config['env']
     elastalert_rules_nfs_path = out_config['elastalert']['rules']['nfs_path'][0]

@@ -1,16 +1,17 @@
 from shutil import copyfile
+import logging
 import sys
 import fileinput
 import re
 import ruamel.yaml as yaml
 from automation.base.base_function import *
-from automation.plugins.prometheus_setup.git_push_prometheus import update_github_alertmanager
+from .git_push import update_github_alertmanager
 from jinja2 import Environment, FileSystemLoader
-from automation.config import config
-
-templates_directory = config("TEMPLATES_DIRECTORY")
-reciever_notification = config("RECIEVER_NOTIFICATION")
-route_notification = config("ROUTE_NOTIFICATION")
+from .config import (
+    TEMPLATES_DIRECTORY,
+    RECIEVER_NOTIFICATION,
+    ROUTE_NOTIFICATION
+)
 
 logger = logging.getLogger(__name__)
 current_values_in_alertmanager = []
@@ -140,9 +141,9 @@ def setup_new_alertmanager(alertmanager_file,
     #
     # Load Jinja2 template
     #
-    jinja_env = Environment(loader=FileSystemLoader(templates_directory))
-    logger.debug("[alertmanager] template dir: {}" .format(templates_directory))
-    template = jinja_env.get_template('am_route_notification')
+    jinja_env = Environment(loader=FileSystemLoader(TEMPLATES_DIRECTORY))
+    logger.debug("[alertmanager] template dir: {}" .format(TEMPLATES_DIRECTORY))
+    template = jinja_env.get_template(ROUTE_NOTIFICATION)  # 'am_route_notification')
     try:
         logger.debug("[alertmanager] opening file")
         with open(alertmanager_file, "r") as asmr:
@@ -166,8 +167,8 @@ def setup_new_alertmanager(alertmanager_file,
     #
     # Load Jinja2 template
     #
-    jinja_env = Environment(loader=FileSystemLoader(templates_directory))
-    reciever_template = jinja_env.get_template('am_reciever_notification')
+    jinja_env = Environment(loader=FileSystemLoader(TEMPLATES_DIRECTORY))
+    reciever_template = jinja_env.get_template(RECIEVER_NOTIFICATION) #'am_reciever_notification')
     try:
         with open(alertmanager_file + "-updated.yaml", "r") as asmr:
             logger.debug("[alertmanager] inside file: {}" .format(alertmanager_file + "-updated.yaml"))

@@ -44,10 +44,12 @@ route:
         service: ^(demo*)$ # NOTE: service = job_name(from: prometheus(config.yaml))
   #    match:
   #      service: demo-service-blackbox
+
     - receiver: 'aws-testrepo-service-team'
       match:
         service: aws-testrepo-service-blackbox
-  ################# ALERT_ROUTES ABOVE #########################
+  ################ ALERT_ROUTES ABOVE #################
+  #####################################################
 
 receivers:
   ################# START JOB #########################
@@ -114,6 +116,8 @@ receivers:
     - send_resolved: true
       api_url: https://hooks.slack.com/services/T12345/T12345/T12345
       channel: "demo-alerts" # DO NOT REMOVE TAG: demo-service-team
+  ################### END JOB #########################
+
   ################### END JOB #########################
   ################# START JOB #########################
   - name: 'aws-testrepo-service-team'

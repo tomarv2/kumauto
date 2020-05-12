@@ -90,6 +90,7 @@ def read_log_level(config_yaml):
 
 
 def ensure_dir_exists(dir_name):
+    logger.debug("directory exists: {}" .format(dir_name))
     if not os.path.exists(dir_name):
         try:
             print("creating dir: ", dir_name)
@@ -100,7 +101,7 @@ def ensure_dir_exists(dir_name):
 
 
 def ensure_file_exists_append_mode(file_path):
-    print("inside ensure_file_exists_append_mode, filepath: ", file_path)
+    logger.debug("inside ensure_file_exists_append_mode, filepath: ", file_path)
     dir_name = os.path.dirname(file_path)
     ensure_dir_exists(dir_name)
     if os.path.exists(file_path):

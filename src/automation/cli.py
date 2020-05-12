@@ -1,15 +1,17 @@
+import logging
 from .logging import configure_logging
-from .validation import *
-from .config import config
 import click
 from tabulate import tabulate
-from automation.plugins.am_setup.am import am_config
-from automation.plugins.prometheus_setup.pm import pm_config
-from automation.plugins.ea_setup.ea import ea_config
+from automation.base.base_function import *
+from automation.plugins.setup_alertmanager.plugin import am_config as am_config
+from automation.plugins.setup_prometheus.plugin import pm_config as pm_config
+from automation.plugins.setup_elastalert.plugin import ea_config as ea_config
+from .config import (
+    CONFIG_YAML_FILE,
+    REQUIREMENTS_YAML_FILE,
+    USER_INPUT_ENV
+)
 
-config_yaml = config("CONFIG_YAML_FILE")
-requirements_yaml = config("REQUIREMENTS_YAML_FILE")
-user_input_env = config("USER_INPUT_ENV")
 logger = logging.getLogger(__name__)
 
 
@@ -108,7 +110,7 @@ def entrypoint_to_all():
     # 2. config.yaml
     #
     # ----------------------------------------------------
-    if validate_yaml(requirements_yaml) and validate_yaml(config_yaml):
+    if validate_yaml(REQUIREMENTS_YAML_FILE) and validate_yaml(CONFIG_YAML_FILE):
         am_config()
         pm_config()
         ea_config()
