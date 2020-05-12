@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 def update_github_alertmanager(alertmanager_config_file, project_name, env):
     #
     #
-    # NOTE: temp returning TRUE
+    # TODO: temp returning TRUE
     #
     #
     return True

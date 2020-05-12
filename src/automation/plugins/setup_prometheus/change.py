@@ -21,7 +21,7 @@ with open(CONFIG_YAML_FILE, 'r') as stream_config:
     prometheus_config_nfs_path = out_config['prometheus']['monitoring']['config']['nfs_path'][0]
     prometheus_rules_nfs_path = out_config['prometheus']['monitoring']['rules']['dir'][0]
     prometheus_static_files_nfs_path = out_config['prometheus']['monitoring']['static_file']['dir'][0]
-    #### Repo paths
+    #### repo paths
     prometheus_repo_url = out_config['prometheus']['monitoring']['repo']['url'][0]
     prometheus_repo_path = out_config['prometheus']['monitoring']['repo']['path'][0]
 
@@ -60,25 +60,29 @@ class UpdatePrometheus:
             self.update_prometheus_rules(os.path.join(prometheus_rules_nfs_path, env), prometheus_rules_repo_path, env, prometheus_config_nfs_path)
             self.update_prometheus_static_files(os.path.join(prometheus_static_files_nfs_path, env), prometheus_static_files_repo_path, env)
 
-
+    # 
     # update alertmanager config file in nfs/efs
+    # TODO: moving out of NFS/EFS
+    #
     def update_alertmanager_config(self, alertmanager_config_nfs_path, alertmanager_config_repo_path):
         logger.error("update_prometheus_config function")
         if not compare_files(alertmanager_config_repo_path, alertmanager_config_nfs_path):
             logger.error('copy from %s to %s',alertmanager_config_repo_path, alertmanager_config_nfs_path)
             shutil.copyfile(alertmanager_config_repo_path, alertmanager_config_nfs_path)
 
-
     # update prometheus config file in nfs/efs
+    # TODO: moving out of NFS/EFS
+    #
     def update_prometheus_config(self, prometheus_config_nfs_path, prometheus_config_repo_path):
         logger.error("update_prometheus_config function")
         if not compare_files(prometheus_config_repo_path, prometheus_config_nfs_path):
             logger.error("copy from %s to %s", prometheus_config_repo_path, prometheus_config_nfs_path)
             shutil.copyfile(prometheus_config_repo_path, prometheus_config_nfs_path)
 
-
     # Update prometheus rules in nfs/efs and push 
     # the changed files to their corresponding projct repo in git
+    # TODO: moving out of NFS/EFS
+    #
     def update_prometheus_rules(self, prometheus_rules_nfs_path, prometheus_rules_repo_path, env, prometheus_config_nfs_path):
         logger.error("update_prometheus_rules function")
         
@@ -108,8 +112,8 @@ class UpdatePrometheus:
                 # rule_path_exists(nfs_file_path, prometheus_config_nfs_path)
                 
                 ##############################################################################
-                #  This part should be enabled if we decide to update the users project repos
-                ##############################################################################   
+                #  TODO: This part should be enabled if we decide to update the users project repos
+                # ------------------------------------------------ 
                 # if update_repo:
                 #     project_name = get_project_name_from_path(rule_file)
                 #     logger.error("project_name: %s", project_name)
@@ -133,9 +137,10 @@ class UpdatePrometheus:
                 #         logger.error("Push changes")
                 #         push_changes(git_ssh_cmd, repo_instance, branch)
 
-
     # Update prometheus static files in nfs/efs and push 
-    # the changed files to their corresponding projct repo in git
+    # the changed files to their corresponding project repo in git
+    # TODO: moving out of NFS/EFS
+    #
     def update_prometheus_static_files(self, prometheus_static_files_nfs_path, prometheus_static_files_repo_path, env):
         logger.error("update_prometheus_static_files function")
         
@@ -160,9 +165,9 @@ class UpdatePrometheus:
                         shutil.copyfile(static_file_path, nfs_file_path)
                         update_repo = True
 
-                ##############################################################################
-                #  This part should be enabled if we decide to update the users project repos
-                ##############################################################################   
+                # ------------------------------------------------
+                #  TODO: This part should be enabled if we decide to update the users project repos
+                # ------------------------------------------------ 
                 # if update_repo:
                 #     project_name = get_project_name_from_path(static_file)
                 #     logger.error("project_name: %s", project_name)

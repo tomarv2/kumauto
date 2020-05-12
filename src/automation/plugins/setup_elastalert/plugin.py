@@ -47,7 +47,12 @@ def ea_config():
                 os.environ["TEST_ELASTALERT"] = "0"
             else:
                 os.environ["TEST_ELASTALERT"] = "1"
-                logger.debug("ELASTALERT validation didn't pass...")
+                logger.debug("ELASTALERT validation didn't pass")
+        # -------------------------------------------------------------------------
+        #
+        # Push the new files
+        #
+        # -------------------------------------------------------------------------
         if os.environ["TEST_ELASTALERT"] == "0":
             update_elastalert(user_input_env_lower, parser.project_name, parser.elastalert_rules_dir)
         # -------------------------------------------------------------------------

@@ -6,6 +6,13 @@ With deployment being so dynamic its hard to make changes.
 In this project we are trying to offload the management of monitoring. When a new project is added, 
 user adds `user_input.yaml` and it will be picked up by CICD (in our case Jenkins).
 
+###
+
+<p align="center">
+  <img width="600" height="370" src="https://files.gitter.im/tomarv2/hhdj/Screen-Shot-2020-04-23-at-8.48.17-AM.png">
+</p>
+
+###
 Where will the monitoring be configured:
 
 - Prometheus

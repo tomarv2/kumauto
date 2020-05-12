@@ -138,29 +138,30 @@ def prometheus_validate_current_setup(prometheus_basefile, project, module, env)
 
 # ------------------------------------------------------
 #
-# ADD THE NEW PROJECT IN PROMETHEUS CONFIG FILE
+# ADD NEW PROJECT IN PROMETHEUS CONFIG FILE
 #
 # ------------------------------------------------------
 def prometheus_config(prometheus_fileloc, prj_name, env):
     alert_route = []
     alert_receiver = []
-    logger.debug("[prometheus] prometheus file loc: {}" .format(prometheus_fileloc))
-    logger.debug("[prometheus] updating prometheus rules section")
+    logger.debug("[prometheus] file loc: {}" .format(prometheus_fileloc))
+    logger.debug("[prometheus] updating rules")
     logger.debug("[prometheus] taking backup of file")
     copyfile(prometheus_fileloc, prometheus_fileloc + '.bak')
     with open(prometheus_fileloc, "r") as asmr:
         for line in asmr.readlines():
             if "PROMETHEUS RULES FILE LOCATION PATH ABOVE" in line:
-                # we have a match,we want something but we before that...
-                alert_route += '''  - '1/rules/2/de-blackbox.yaml-updated.yaml'\n'''.format(alert_route_path, env, prj_name)
+                #
+                # we have a match,we want something but before that...
+                #
+                alert_route += '''  - '{}/rules/{}/de-blackbox.yaml-updated.yaml'\n'''.format(alert_route_path, env, prj_name)
             alert_route += line
     try:
         logger.debug("write to file: {}" .format(prometheus_fileloc + "-updated.yaml"))
         with open(prometheus_fileloc + "-updated.yaml", "w") as asmw:
             asmw.writelines(alert_route)
     except:
-        logger.error("unable to write to file")
-    # os.rename(prometheus_fileloc + "-updated.yaml", prometheus_fileloc)
+        logger.error("unable to write to file: {}" .format(prometheus_fileloc + "-updated.yaml"))
     time.sleep(1)
 
     logger.info("[prometheus] updating job section")
@@ -185,7 +186,6 @@ def prometheus_config(prometheus_fileloc, prj_name, env):
                 alert_receiver += line
     except:
         logger.debug("[prometheus] unable to open file: {}".format(prometheus_fileloc + "-updated.yaml"))
-    # print(''.join(alert_receiver))
     time.sleep(1)
     try:
         with open(prometheus_fileloc + "-updated.yaml", "w") as asmw:
@@ -218,10 +218,9 @@ def rules_setup(rules_dir, sample_file, project_name, env, project_name_without_
     except:
         logger.error("[prometheus] unable to copy files")
         raise SystemExit
-    # for (dirpath, dirnames, filenames) in os.walk(rules_dir):
-    #     current_list_of_projects.extend(filenames)
-    #     break
+    #
     # todo: find a better way to do this (to be rewritten)
+    #
     with open(rules_file_name, 'r') as f:
         filedata = f.read()
     # todo: find a better way to do this
@@ -252,18 +251,11 @@ def rules_setup(rules_dir, sample_file, project_name, env, project_name_without_
 #
 # -----------------------------------------
 def static_files_setup(prometheus_staticfiles_dir, staticfiles_sample_file, project_name, targets_to_monitor, env):
-    #current_list_of_projects = []
     logger.debug("[prometheus] static-files dir: %s", os.path.join(prometheus_staticfiles_dir, env))
     logger.debug("[prometheus] static-files sample file: %s", staticfiles_sample_file)
     full_filename = os.path.join(prometheus_staticfiles_dir, env, project_name) + '-blackbox.yaml' + "-updated.yaml"
     logger.debug("[prometheus] static-file name: %s", full_filename)
     logger.debug("[prometheus] trying to delete: %s", project_name)
-    # try:
-    #     if os.path.isfile(full_filename):
-    #         os.remove(full_filename)
-    # except BaseException:
-    #     logger.error("[prometheus] unable to delete file: %s",project_name)
-    #     pass
     logger.debug("[prometheus] copying sample file from: [{}] to: [{}]" .format(staticfiles_sample_file, full_filename))
     try:
         logger.debug("[prometheus] copying files")
@@ -273,9 +265,6 @@ def static_files_setup(prometheus_staticfiles_dir, staticfiles_sample_file, proj
     except:
         logger.error("[prometheus] unable to copy static-file: {}" .format(staticfiles_sample_file))
         raise SystemExit
-    # for (dirpath, dirnames, filenames) in os.walk(os.path.join(prometheus_staticfiles_dir, env)):
-    #     current_list_of_projects.extend(filenames)
-    #     break
     logger.debug("[prometheus] trying to open static file")
     f = open(full_filename, 'r')
     filedata = f.read()
@@ -287,15 +276,6 @@ def static_files_setup(prometheus_staticfiles_dir, staticfiles_sample_file, proj
     f = open(full_filename, 'w')
     f.write(newdata)
     f.close()
-    ###################
-    # logger.error("[prometheus] trying to delete: %s", project_name)
-    # try:
-    #     if os.path.isfile(full_filename):
-    #         os.remove(full_filename)
-    #
-    # except:
-    #     logger.error("[prometheus] unable to delete file: %s", project_name)
-    #     pass
 
     f = open(full_filename, 'r')
     filedata = f.read()
@@ -319,7 +299,7 @@ def update_targets(prometheus_staticfiles_dir, project_name, end_point, modules,
     prometheus_staticfiles_dir = ''.join(prometheus_staticfiles_dir)
     static_file = os.path.join(prometheus_staticfiles_dir, project_name + '-' + modules + '.yaml')
     logger.debug("[prometheus] static-files location: {}" .format(prometheus_staticfiles_dir))
-    logger.debug("[prometheus] project_name: {}" .format(project_name))
+    logger.debug("[prometheus] project name: {}" .format(project_name))
     logger.debug("[prometheus] currently configured endpoints: {}" .format(end_point))
     modules = ([y for x in modules for y in x])
     modules = ''.join(modules)
@@ -367,6 +347,9 @@ def update_prometheus(env,
         update_prometheus_rules_dir(os.path.join(monitoring_rules_dir, env))
         update_prometheus_staticfiles_dir(os.path.join(monitoring_static_file_dir, env))
         update_prometheus_config(monitoring_config_file_path)
+        #
+        # TODO: Disabled git repo to make it modular (VT)
+        #
         #update_github_prometheus(os.path.join(monitoring_rules_dir, env),
                                 #  os.path.join(monitoring_static_file_dir, env),
                                 # monitoring_config_file_path,
@@ -386,11 +369,10 @@ def update_prometheus_config(prometheus_config_file):
         with open(prometheus_config_file + "-updated.yaml", "w") as f:
             f.write(newContent)  
         try:
-            # shutil.move(prometheus_config_file + "-updated.yaml", prometheus_config_file)
             os.rename(prometheus_config_file + "-updated.yaml", prometheus_config_file)
             time.sleep(1)
         except OSError:
-            logger.error("[prometheus] can't move %s", prometheus_config_file + "-updated.yaml")
+            logger.error("[prometheus] can't move: {}" .format(prometheus_config_file + "-updated.yaml"))
         if os.path.exists(prometheus_config_file + "-updated.yaml"):
             os.remove(prometheus_config_file + "-updated.yaml")
 
@@ -401,7 +383,7 @@ def update_prometheus_rules_dir(prometheus_rules_dir):
     for rule_file in files:
         if "-updated.yaml" in rule_file:
             rule_file_name = rule_file.replace("-updated.yaml", "")
-            logger.info("[prometheus] rule file name %s and rule file %s ", rule_file_name, rule_file)
+            logger.info("[prometheus] rule file name {} and rule file {}" .format(rule_file_name, rule_file))
             try:
                 if os.path.exists(os.path.join(prometheus_rules_dir, rule_file_name)):
                     logger.debug("[prometheus] removing rule file name  %s", os.path.join(prometheus_rules_dir, rule_file_name))
@@ -436,7 +418,6 @@ def update_prometheus_staticfiles_dir(prometheus_staticfiles_dir):
                 logger.error("[prometheus] unable to delete file: %s", os.path.join(prometheus_staticfiles_dir, static_file_name))
                 pass
             try:
-                # shutil.move(static_file, static_file_name)
                 logger.debug("[prometheus] renaming %s to  %s", static_file, static_file_name)
                 os.rename(os.path.join(prometheus_staticfiles_dir, static_file), os.path.join(prometheus_staticfiles_dir, static_file_name))
                 time.sleep(1)

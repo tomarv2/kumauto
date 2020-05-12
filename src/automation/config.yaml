@@ -26,7 +26,7 @@ prometheus:
       sample_file:
         - /Users/varun.tomar/Documents/personal_github/mauto/data/sample-files/prometheus/static-files/sample-staticfile.yaml
       nfs_path:  # TODO - Right now this path is required, future plan is move away from NFS/EFS
-        - //Users/varun.tomar/Documents/personal_github/mauto/demo1/demo-data/monitoring/static-files/NFS
+        - /Users/varun.tomar/Documents/personal_github/mauto/demo1/demo-data/monitoring/static-files/NFS
     repo:
       path:
         - /Users/varun.tomar/Documents/personal_github/mauto/data/temp-data/update_github_prometheus/prometheus
@@ -37,7 +37,7 @@ elastalert:
     dir:
     - /Users/varun.tomar/Documents/personal_github/mauto/demo1/demo-data/elastalert/rules
     nfs_path:  # TODO - Right now this path is required, future plan is move away from NFS/EFS
-    - //Users/varun.tomar/Documents/personal_github/mauto/demo1/demo-data/elastalert/rules/NFS
+    - /Users/varun.tomar/Documents/personal_github/mauto/demo1/demo-data/elastalert/rules/NFS
     sample_file:
     - /Users/varun.tomar/Documents/personal_github/mauto/data/sample-files/elastalert/sample-elastalert-rules.yaml
   config:
