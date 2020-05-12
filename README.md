@@ -9,7 +9,7 @@ user adds `user_input.yaml` and it will be picked up by CICD (in our case Jenkin
 ###
 
 <p align="center">
-  <img width="600" height="370" src="https://files.gitter.im/tomarv2/hhdj/Screen-Shot-2020-04-23-at-8.48.17-AM.png">
+  <img width="600" height="370" src="https://miro.medium.com/max/1400/1*Tp1kUoGHRPmB4wik1kKHkA.png">
 </p>
 
 ###
