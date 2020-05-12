@@ -3,8 +3,12 @@
 One of the main problem that we face with microservices deployment is how to configure monitoring.
 With deployment being so dynamic its hard to make changes.
 
-In this project we are trying to offload the management of monitoring. When a new project is added, 
-user adds `user_input.yaml` and it will be picked up by CICD (in our case Jenkins).
+As you can see in the blog: https://medium.com/@tomarv2/jenkins-shared-libraries-ab64f7acac68. I discussed how can 
+repos can be arranged and how monitoring jobs at scale can be configured. Most of the work of adding projects to monitoring and alerting was manual.
+
+In this project we are trying to offload the management of monitoring and alerting. When a new project is added, 
+user adds/updates `user_input.yaml` and it will be picked up by CICD (in this case Jenkins).
+
 
 ###
 
