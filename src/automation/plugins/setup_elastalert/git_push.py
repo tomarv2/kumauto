@@ -3,10 +3,11 @@ from automation.base.git_actions import *
 from automation.base.base_function import *
 import yaml
 import logging
-from automation.config import config
+from .config import (
+    CONFIG_YAML_FILE
+)
 
 logger = logging.getLogger(__name__)
-config_yaml = config("CONFIG_YAML_FILE")
 
 
 def update_github_elastalert(elastalert_rules_dir, project_name, env):
@@ -17,7 +18,7 @@ def update_github_elastalert(elastalert_rules_dir, project_name, env):
     #
     return True
     # parse config file
-    with open(config_yaml, 'r') as stream_config:
+    with open(CONFIG_YAML_FILE, 'r') as stream_config:
             out_config = yaml.load(stream_config)
             ssh_key_path = out_config['ssh_key_path'][0]
             branch = out_config['branch'][0]

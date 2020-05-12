@@ -293,8 +293,6 @@ scrape_configs:
       - 'es-exporter:9114'
 #################################################################
 #################################################################
-
-#################################################################
   - job_name: 'aws-testrepo-service'
     scrape_interval: 60s
     scrape_timeout: 10s
@@ -321,11 +319,11 @@ scrape_configs:
         regex: (.*)
         target_label: __param_module
         replacement: ${1}
-######################################################################################################################### PROMETHEUS JOB SECTION ABOVE ####################
+############################################################################################################## PROMETHEUS JOB SECTION ABOVE ####################
 # Rule files specifies a list of globs. Rules and alerts are read from
 # all matching files.
 rule_files:
   - '/etc/prometheus/prometheus.rules'
   - '/etc/prometheus/kubernetes-monitoring.yaml'
-  - '/mnt/monitoring/prometheus/monitoring/rules/aws/aws-testrepo-service-blackbox.yaml'
+  - '/mnt/monitoring/prometheus/monitoring/rules/aws/de-blackbox.yaml'
 ############# PROMETHEUS RULES FILE LOCATION PATH ABOVE ###################
