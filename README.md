@@ -32,9 +32,11 @@ Where will the monitoring be configured:
 
 ***
 
+### How to begin:
+
 To create dummy data for testing:
 
-verify if static-files directory exists:
+verify if `static-files` directory exists:
 
 ```
 DIR_NAME=demo1
@@ -56,6 +58,12 @@ verify if prometheus config file exists:
 mkdir -p $BASE_PATH/mauto/junk/demo-data/monitoring/
 cp $BASE_PATH/mauto/data/demo-data/monitoring/config.yaml $BASE_PATH/mauto/junk/demo-data/monitoring/
 ```
+
+verify .env file exists:
+
+Copy the `example.env` and create a .env file
+
+Update `src/automation/config.yaml`
 
 ### How to use?
 

@@ -16,6 +16,11 @@ logger = logging.getLogger(__name__)
 def ea_config():
     if validate_yaml(REQUIREMENTS_YAML_FILE) and validate_yaml(CONFIG_YAML_FILE):
         user_input_env_lower = USER_INPUT_ENV.lower()
+        # ----------------------------------------------------
+        #
+        # Build the new files
+        #
+        # ----------------------------------------------------
         logger.debug("Checking the format of yaml file")
         parser = ParseInputs()
         logger.debug('config file: {}' .format(CONFIG_YAML_FILE))
@@ -31,6 +36,11 @@ def ea_config():
                          parser.email_to,
                          parser.pagerduty_service_key_id,
                          parser.pagerduty_client_name)
+        # -------------------------------------------------------------------------
+        #
+        # Test the new files
+        #
+        # -------------------------------------------------------------------------
         if os.environ["TEST_ELASTALERT"] == "0":
             logger.debug("TESTING ELASTALERT")
             if validate_elastalert_rules(parser.temporary_ea_rules, user_input_env_lower):

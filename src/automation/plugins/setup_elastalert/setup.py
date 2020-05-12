@@ -49,6 +49,7 @@ def build_elastalert(user_input_env,
                                )
     except BaseException:
         logger.error("[elastalert] unable to setup config")
+    return 0
 
 
 # --------------------------------------------------------
@@ -91,7 +92,8 @@ def elastalert_rules_setup(elastalert_rules_dir,
         temporary_ea_rules = ''.join(out_config['elastalert']['temporary_ea_rules'])
         logger.debug("[elastalert] temporary EA rules: {}" .format(temporary_ea_rules))
 
-    ea_rules_file = os.path.join(temporary_ea_rules, env, project_name + '.yaml')
+    #ea_rules_file = os.path.join(temporary_ea_rules, env, project_name + '.yaml') # TODO: old method
+    ea_rules_file = os.path.join(elastalert_rules_dir, env, project_name + '.yaml') # TODO: new method, changed on 05/11/20
     try:
         logger.debug("[elastalert] checking if directory exists")
         ensure_dir_exists(os.path.join(temporary_ea_rules, env))

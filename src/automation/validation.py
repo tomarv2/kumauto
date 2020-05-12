@@ -2,7 +2,7 @@ import shutil
 import os
 import ruamel.yaml as yaml
 from subprocess import call
-from pykwalify.core import Core as CoreKwalify
+# from pykwalify.core import Core as CoreKwalify
 import logging
 from automation.base.base_function import validate_yaml
 from .config import config

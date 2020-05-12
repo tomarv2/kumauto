@@ -292,10 +292,39 @@ scrape_configs:
     - targets:
       - 'es-exporter:9114'
 #################################################################
-################## PROMETHEUS JOB SECTION ABOVE ####################
+
+#################################################################
+  - job_name: 'aws-testrepo-service'
+    scrape_interval: 60s
+    scrape_timeout: 10s
+    metrics_path: /probe
+    params:
+      module: [http_check]
+    file_sd_configs:
+      - files:
+        - /mnt/monitoring/prometheus/monitoring/static_files/aws/aws-testrepo-service-blackbox.yaml
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: (.*)(:80)?
+        target_label: __param_target
+        replacement: ${1}
+      - source_labels: [__param_target]
+        regex: (.*)
+        target_label: instance
+        replacement: ${1}
+      - source_labels: []
+        regex: .*
+        target_label: __address__
+        replacement: prometheus-blackbox:9115
+      - source_labels: [checker]
+        regex: (.*)
+        target_label: __param_module
+        replacement: ${1}
+#################################################################################################################################################### PROMETHEUS JOB SECTION ABOVE ####################
 # Rule files specifies a list of globs. Rules and alerts are read from
 # all matching files.
 rule_files:
   - '/etc/prometheus/prometheus.rules'
   - '/etc/prometheus/kubernetes-monitoring.yaml'
+  - '1/rules/2/de-blackbox.yaml'
 ############# PROMETHEUS RULES FILE LOCATION PATH ABOVE ###################

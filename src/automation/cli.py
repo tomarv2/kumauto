@@ -2,6 +2,7 @@ import logging
 from .logging import configure_logging
 import click
 from tabulate import tabulate
+from automation.base.base_function import *
 from automation.plugins.setup_alertmanager.plugin import am_config as am_config
 from automation.plugins.setup_prometheus.plugin import pm_config as pm_config
 from automation.plugins.setup_elastalert.plugin import ea_config as ea_config

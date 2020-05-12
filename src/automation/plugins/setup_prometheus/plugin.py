@@ -34,7 +34,8 @@ def pm_config():
                          parser.modules,
                          parser.project_name_without_env)
 
-        if os.environ["TEST_PROMETHEUS"] == "0":
+        print('-' * 75)
+        if os.environ["TEST_PROMETHEUS"] == "1":
             logger.debug("TESTING PROMETHEUS")
             if validate_prometheus_config(parser.monitoring_config_file_path) and \
                     validate_prometheus_rules(parser.monitoring_rules_dir) and \
@@ -45,8 +46,12 @@ def pm_config():
                 logger.debug("PROMETHEUS validation didn't pass...")
 
         if os.environ["TEST_PROMETHEUS"] == "0":
-            update_prometheus(user_input_env_lower, parser.project_name, parser.monitoring_config_file_path,
-                              parser.monitoring_rules_dir, parser.monitoring_static_file_dir)
+            logger.debug("updating prometheus")
+            update_prometheus(user_input_env_lower,
+                              parser.project_name,
+                              parser.monitoring_config_file_path,
+                              parser.monitoring_rules_dir,
+                              parser.monitoring_static_file_dir)
 
         # -------------------------------------------------------------------------
         #

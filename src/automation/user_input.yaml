@@ -25,9 +25,9 @@ monitoring:
         - test-alerts
   target:
     aws-stg:
-      - <endpoint to monitor>
+      - stg.mauto.com
     aws:
-      - <endpoint to monitor>
+      - mauto.com
 
   elastalert:
     query:

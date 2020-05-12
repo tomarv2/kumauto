@@ -1,4 +1,0 @@
-- labels:
-    job: aws-testrepo-service-blackbox
-  targets:
-  - <endpoint to monitor>

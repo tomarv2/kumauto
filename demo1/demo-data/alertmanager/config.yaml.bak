@@ -45,10 +45,8 @@ route:
   #    match:
   #      service: demo-service-blackbox
 
-    - receiver: 'aws-testrepo-service-team'
-      match:
-        service: aws-testrepo-service-blackbox
-  ################# ALERT_ROUTES ABOVE #########################
+  ################ ALERT_ROUTES ABOVE #################
+  #####################################################
 
 receivers:
   ################# START JOB #########################
@@ -116,5 +114,6 @@ receivers:
       api_url: https://hooks.slack.com/services/T12345/T12345/T12345
       channel: "demo-alerts" # DO NOT REMOVE TAG: demo-service-team
   ################### END JOB #########################
+
   ################### END JOB #########################
   ############## ALERT_RECEIVERS ABOVE ################
