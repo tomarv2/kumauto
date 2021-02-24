@@ -25,3 +25,8 @@ starlette==0.13.4
 Jinja2==2.11.2
 click==7.1.2
 tabulate==0.8.7
+fastapi
+starlette
+sentry_asgi
+aiofiles
+httpx
